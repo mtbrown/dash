@@ -74,7 +74,7 @@
         var socket = io.connect('http://' + document.domain + ':' + location.port + '/sysinfo');
         socket.on('info', function(msg) {
             console.log("Received " + msg.cpu);
-            console.log("Received " + msg.mem[0]);
+            console.log("Received " + msg.mem);
 
             $('#mem').css('width', msg.mem[1]+'%').attr('aria-valuenow', msg.mem[1]);
             document.getElementById('mem-text').textContent=msg.mem[0];
