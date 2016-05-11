@@ -33,7 +33,8 @@ class SystemInfoThread(threading.Thread):
     @staticmethod
     def mem_usage():
         mem_info = psutil.virtual_memory()
-        return humanize(mem_info.used), mem_info.percent
+        mem_used = humanize(mem_info.total - mem_info.active)
+        return mem_used, mem_info.percent
 
     def stop(self):
         self._stop.set()
