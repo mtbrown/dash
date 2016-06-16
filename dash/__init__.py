@@ -21,4 +21,4 @@ def index():
 socketio.init_app(app)
 
 # Import views and socketio listeners, keep at bottom to avoid circular imports
-import panel.systeminfo
+import dash.systeminfo

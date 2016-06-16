@@ -1,7 +1,7 @@
 import psutil
 import threading
 
-from panel import socketio, app
+from dash import socketio, app
 from flask import render_template
 
 
