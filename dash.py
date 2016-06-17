@@ -1,5 +1,4 @@
-from dash import app, socketio, plugins
+from dash import app, socketio
 
 if __name__ == "__main__":
-    plugins.load_plugins()
-    socketio.run(app)
+    socketio.run(app, use_reloader=False)
