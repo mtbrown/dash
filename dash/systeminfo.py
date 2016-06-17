@@ -17,6 +17,7 @@ def humanize(num, suffix='B'):
 @app.route('/system')
 def system():
     return render_template('system.html',
+                           title="System",
                            num_cpus=psutil.cpu_count(),
                            mem_total=humanize(psutil.virtual_memory().total))
 

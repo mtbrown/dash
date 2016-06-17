@@ -1,4 +1,4 @@
-from dash.panel import Panel, LiveTextBox
+from dash.components import Panel, LiveTextBox
 import time
 
 
@@ -16,4 +16,4 @@ def main(panel):
 
 
 if __name__ == "__main__":
-    main(Panel())
+    pass
