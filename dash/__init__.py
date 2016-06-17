@@ -1,9 +1,12 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 import eventlet
+import logging
 
 from . import plugins
 
+
+logging.basicConfig(format='%(asctime)s: [%(levelname)s] %(message)s', level=logging.DEBUG)
 
 # monkey patching is required because background threads are used
 eventlet.monkey_patch()
@@ -17,6 +20,7 @@ app.debug = True
 # load plugins
 plugins.load_plugins()
 plugin_list = plugins.list_plugins()
+plugins.start_plugins()
 
 # add url rules for all plugins
 for plugin in plugin_list:
