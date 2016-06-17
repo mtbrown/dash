@@ -28,10 +28,10 @@ class Panel:
 
 
 class LiveTextBox(Panel):
-    def __init__(self, title=None):
+    def __init__(self, title=None, text=""):
         super(LiveTextBox, self).__init__()
         self.title = title
-        self.text = "hello"  # TODO
+        self.text = text
         self.id = "text1"  # TODO
 
     def update(self, text):

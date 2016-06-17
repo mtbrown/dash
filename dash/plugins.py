@@ -17,7 +17,7 @@ class Plugin:
         self.main = main
         self.grid = components.Grid()
         self.thread = None
-        self.view_func = lambda: render_template('base.html', name=self.name)
+        self.view_func = lambda: render_template('plugin.html', name=self.name, grid=self.grid.render())
 
 
 def load_plugins():

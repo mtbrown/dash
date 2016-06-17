@@ -6,7 +6,7 @@
                     <h3 class="panel-title">{{ panel.title }}</h3>
                 </div>
                 <div class="panel-body">
-                    {{ panel.render() }}
+                    {{ panel.render()|safe }}
                 </div>
             </div>
         {% endfor %}

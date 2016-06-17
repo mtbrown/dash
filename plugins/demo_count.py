@@ -1,16 +1,18 @@
-from dash.components import Panel, LiveTextBox
+from dash.components import LiveTextBox
+import logging
 import time
 
 
-def main(panel):
+def main(grid):
     count = 0
 
-    text_box = LiveTextBox()
-    panel.add(text_box)
+    text_box = LiveTextBox(title="Counter")
+    grid.add(text_box)
 
     while True:
-        # update
+        text_box.update("count is {0}".format(count))
 
+        logging.debug("count is {0}".format(count))
         count += 1
         time.sleep(1)
 
