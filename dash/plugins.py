@@ -34,6 +34,7 @@ class PluginScheduler(threading.Thread):
     def __init__(self):
         super(PluginScheduler, self).__init__()
         self._stop = threading.Event()
+        self.daemon = True  # stop scheduler and all plugins when main thread exits
 
     def stop(self):
         self._stop.set()
