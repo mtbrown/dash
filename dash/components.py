@@ -1,9 +1,13 @@
 from flask import render_template
 import abc
+import logging
+
+from dash import socketio
 
 
 class Grid:
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name  # name of plugin that owns grid
         self.panels = []
 
     def add(self, panel):
@@ -37,6 +41,9 @@ class LiveTextBox(Panel):
 
     def update(self, text):
         self.text = text
+        for container in self.containers:
+            logging.debug('Emitting "{0}" to {1} on namespace {2}'.format(text, self.id, container.name))
+            socketio.emit(self.id, text, namespace='/{0}'.format(container.name))
 
     def render_html(self):
         return render_template('textbox.html', id=self.id, text=self.text)

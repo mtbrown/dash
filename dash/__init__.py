@@ -3,9 +3,6 @@ from flask_socketio import SocketIO
 import eventlet
 import logging
 
-from . import plugins
-
-
 logging.basicConfig(format='%(asctime)s: [%(levelname)s] %(message)s', level=logging.DEBUG)
 
 # monkey patching is required because background threads are used
@@ -16,6 +13,9 @@ socketio = SocketIO()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.debug = True
+
+# plugins module imports socketio from above
+from . import plugins
 
 # load plugins
 plugins.load_plugins()

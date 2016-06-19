@@ -21,7 +21,12 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 <script type="text/javascript" charset="utf-8">
     $( document ).ready(function() {
-        var socket = io.connect('http://' + document.domain + ':' + location.port + '/' + {{ name }});
+        var socket = io.connect('http://' + document.domain + ':' + location.port + '/{{ name }}');
+
+        socket.on('connect', function() {
+            console.log('Web socket connected successfully');
+        });
+
         {% for panel in panels %}
             {{ panel.render_js()|safe }}
         {% endfor %}
