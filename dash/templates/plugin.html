@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-{{ grid|safe }}
+<div class="row">
+    <div class="col-sm-12">
+        {% for panel in panels %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ panel.title }}</h3>
+            </div>
+            <div class="panel-body">
+                {{ panel.render_html()|safe }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
 
 {% block body %}
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $( document ).ready(function() {
+        var socket = io.connect('http://' + document.domain + ':' + location.port + '/' + {{ name }});
+        {% for panel in panels %}
+            {{ panel.render_js()|safe }}
+        {% endfor %}
+    });
+</script>
 {% endblock %}

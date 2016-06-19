@@ -26,6 +26,7 @@ class SystemInfoThread(threading.Thread):
     def __init__(self):
         super(SystemInfoThread, self).__init__()
         self._stop = threading.Event()
+        self.daemon = True
 
     @staticmethod
     def cpu_usage():

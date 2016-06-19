@@ -14,16 +14,17 @@ class Grid:
         panel.containers.remove(self)
         self.panels.remove(panel)
 
-    def render(self):
-        return render_template('grid.html', panels=self.panels)
-
 
 class Panel:
     def __init__(self):
         self.containers = []  # grids that panel is currently contained in
 
     @abc.abstractmethod
-    def render(self):
+    def render_html(self):
+        return
+
+    @abc.abstractmethod
+    def render_js(self):
         return
 
 
@@ -37,5 +38,8 @@ class LiveTextBox(Panel):
     def update(self, text):
         self.text = text
 
-    def render(self):
+    def render_html(self):
         return render_template('textbox.html', id=self.id, text=self.text)
+
+    def render_js(self):
+        return render_template('textbox.js', id=self.id)
