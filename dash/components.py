@@ -20,6 +20,8 @@ class Grid:
 
 
 class Panel:
+    id_counter = 0
+
     def __init__(self):
         self.containers = []  # grids that panel is currently contained in
 
@@ -37,7 +39,8 @@ class LiveTextBox(Panel):
         super(LiveTextBox, self).__init__()
         self.title = title
         self.text = text
-        self.id = "text1"  # TODO
+        self.id = "text{0}".format(LiveTextBox.id_counter)
+        LiveTextBox.id_counter += 1
 
     def update(self, text):
         self.text = text
