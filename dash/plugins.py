@@ -5,7 +5,7 @@ import threading
 import time
 from flask import render_template
 
-from . import components
+from dash import app, components
 
 plugins_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "plugins"))  # ../plugins
 _plugins = []
@@ -26,8 +26,14 @@ def load_plugins():
         fname, ext = os.path.splitext(f)
         if ext == '.py':
             mod = __import__(fname)
-            _plugins.append(Plugin(fname, mod.main))
+            setup_plugin(fname, mod.main)
     sys.path.pop(0)
+
+
+def setup_plugin(fname, main):
+    new = Plugin(fname, main)
+    _plugins.append(new)
+    app.add_url_rule("/{0}".format(new.name), new.name, new.view_func)
 
 
 class PluginScheduler(threading.Thread):
