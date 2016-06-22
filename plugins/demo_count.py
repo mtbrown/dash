@@ -12,7 +12,7 @@ def main(grid):
     while True:
         text_box.update("count is {0}".format(count))
 
-        logging.debug("count is {0}".format(count))
+        grid.logger.debug("count is {0}".format(count))
         count += 1
         time.sleep(1)
 
