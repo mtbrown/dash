@@ -64,7 +64,7 @@
       {# Plugins list #}
       <ul class="nav nav-sidebar">
         {% for plugin in plugins %}
-        <li {% if request.path == url_for(plugin) %}class="active"{% endif %}>
+        <li {% if active_page == plugin %}class="active"{% endif %}>
         <a href="{{ url_for(plugin) }}">{{ plugin }}</a>
         </li>
         {% endfor %}
