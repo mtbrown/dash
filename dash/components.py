@@ -90,7 +90,10 @@ class Table(Panel):
         self.max_rows = max_rows
 
     def add_row(self, row):
-        # self.rows.append(row)
+        if self.max_rows and len(self.rows) >= self.max_rows:
+            self.rows.pop()
+        self.rows.insert(0, row)
+
         for container in self.containers:
             socketio.emit(self.id, row, namespace='/' + container.name)
 
@@ -98,4 +101,4 @@ class Table(Panel):
         return render_template('table.html', id=self.id, headers=self.headers, rows=self.rows)
 
     def render_js(self):
-        return render_template('table.js', id=self.id)
+        return render_template('table.js', id=self.id, max_rows=self.max_rows)
