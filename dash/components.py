@@ -79,3 +79,24 @@ class LiveTextBox(Panel):
 
     def render_js(self):
         return render_template('textbox.js', id=self.id)
+
+
+class Table(Panel):
+    def __init__(self, title=None, rows=None, headers=None, max_rows=None):
+        super(Table, self).__init__()
+        self.title = title
+        self.headers = headers
+        self.rows = list(rows)
+        self.max_rows = max_rows
+        self.id = "table{0}".format(Table.id_counter)
+        Table.id_counter += 1
+
+    def add_row(self, row):
+        self.rows.append(row)
+        socketio.emit(self.id, row, namespace='/{0}'.format(container.name))
+
+    def render_html(self):
+        return render_template('table.html', headers=self.headers, rows=self.rows)
+
+    def render_js(self):
+        pass
