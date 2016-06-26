@@ -92,9 +92,7 @@ class Table(Panel):
     def add_row(self, row):
         # self.rows.append(row)
         for container in self.containers:
-            with app.app_context():
-                row_html = render_template('table_row.html', row=row)
-                socketio.emit(self.id, row_html, namespace='/' + container.name)
+            socketio.emit(self.id, row, namespace='/' + container.name)
 
     def render_html(self):
         return render_template('table.html', id=self.id, headers=self.headers, rows=self.rows)
