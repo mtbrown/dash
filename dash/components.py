@@ -50,6 +50,8 @@ class Panel:
 
     def __init__(self):
         self.containers = []  # grids that panel is currently contained in
+        self.id = "panel" + str(Panel.id_counter)
+        Panel.id_counter += 1
 
     @abc.abstractmethod
     def render_html(self):
@@ -65,8 +67,6 @@ class LiveTextBox(Panel):
         super(LiveTextBox, self).__init__()
         self.title = title
         self.text = text
-        self.id = "text{0}".format(LiveTextBox.id_counter)
-        LiveTextBox.id_counter += 1
 
     def update(self, text):
         self.text = text
@@ -87,8 +87,6 @@ class Table(Panel):
         self.headers = headers
         self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows
-        self.id = "table{0}".format(Table.id_counter)
-        Table.id_counter += 1
 
     def add_row(self, row):
         self.rows.append(row)
