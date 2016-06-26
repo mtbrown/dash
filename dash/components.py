@@ -71,8 +71,7 @@ class LiveTextBox(Panel):
     def update(self, text):
         self.text = text
         for container in self.containers:
-            logging.debug('Emitting "{0}" to {1} on namespace {2}'.format(text, self.id, container.name))
-            socketio.emit(self.id, text, namespace='/{0}'.format(container.name))
+            socketio.emit(self.id, text, namespace='/' + container.name)
 
     def render_html(self):
         return render_template('textbox.html', id=self.id, text=self.text)
@@ -86,14 +85,15 @@ class Table(Panel):
         super(Table, self).__init__()
         self.title = title
         self.headers = headers
-        self.rows = list(rows)
+        self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows
         self.id = "table{0}".format(Table.id_counter)
         Table.id_counter += 1
 
     def add_row(self, row):
         self.rows.append(row)
-        socketio.emit(self.id, row, namespace='/{0}'.format(container.name))
+        for container in self.containers:
+            socketio.emit(self.id, row, namespace='/' + container.name)
 
     def render_html(self):
         return render_template('table.html', headers=self.headers, rows=self.rows)
