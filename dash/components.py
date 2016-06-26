@@ -3,8 +3,9 @@ import abc
 import logging
 import logging.handlers
 import queue
+import jinja2
 
-from dash import socketio
+from dash import app, socketio
 
 LOG_LINES = 50
 
@@ -89,12 +90,14 @@ class Table(Panel):
         self.max_rows = max_rows
 
     def add_row(self, row):
-        self.rows.append(row)
+        # self.rows.append(row)
         for container in self.containers:
-            socketio.emit(self.id, row, namespace='/' + container.name)
+            with app.app_context():
+                row_html = render_template('table_row.html', row=row)
+                socketio.emit(self.id, row_html, namespace='/' + container.name)
 
     def render_html(self):
-        return render_template('table.html', headers=self.headers, rows=self.rows)
+        return render_template('table.html', id=self.id, headers=self.headers, rows=self.rows)
 
     def render_js(self):
-        pass
+        return render_template('table.js', id=self.id)
