@@ -30,12 +30,12 @@ class SystemInfoThread(threading.Thread):
 
     @staticmethod
     def cpu_usage():
-        return psutil.cpu_percent(interval=1, percpu=True)
+        return psutil.cpu_percent(interval=1, percpu=True)  # blocks for |interval| seconds
 
     @staticmethod
     def mem_usage():
         mem_info = psutil.virtual_memory()
-        mem_used = humanize(mem_info.total - mem_info.active)
+        mem_used = humanize(mem_info.active)
         return mem_used, mem_info.percent
 
     def stop(self):
