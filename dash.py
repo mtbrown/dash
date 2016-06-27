@@ -13,7 +13,7 @@ def main():
         return {'plugins': {p.name for p in plugin_list}}
 
     socketio.init_app(app)
-    socketio.run(app, use_reloader=False)
+    socketio.run(app, use_reloader=False, host='0.0.0.0')
 
 if __name__ == "__main__":
     main()
