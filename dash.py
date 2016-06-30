@@ -1,7 +1,10 @@
+import logging
 from dash import app, socketio, plugins, systeminfo
 
 
 def main():
+    logging.basicConfig(format='%(asctime)s: [%(levelname)s] %(message)s', level=logging.INFO)
+
     # load plugins
     plugins.load_plugins()
     plugin_list = plugins.list_plugins()
