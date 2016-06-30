@@ -1,11 +1,11 @@
-from dash.components import LiveTextBox, Table
+from dash.components import Text, Table
 from random import randint
 import logging
 import time
 
 
 def main(grid):
-    hello_text = LiveTextBox(title="Hello", text="This is a sample table")
+    hello_text = Text(title="Hello", text="This is a sample table")
     grid.add(hello_text)
 
     table = Table(title="Table", headers=["head1", "head2", "head3"], max_rows=10)

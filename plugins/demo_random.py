@@ -1,14 +1,14 @@
-from dash.components import LiveTextBox
+from dash.components import Text
 from random import randint
 import logging
 import time
 
 
 def main(grid):
-    hello_text = LiveTextBox(title="Hello", text="This outputs random numbers")
+    hello_text = Text(title="Hello", text="This outputs random numbers")
     grid.add(hello_text)
 
-    rand_text = LiveTextBox(title="Random")
+    rand_text = Text(title="Random")
     grid.add(rand_text)
 
     while True:

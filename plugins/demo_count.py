@@ -1,4 +1,4 @@
-from dash.components import LiveTextBox
+from dash.components import Text
 import logging
 import time
 
@@ -6,7 +6,7 @@ import time
 def main(grid):
     count = 0
 
-    text_box = LiveTextBox(title="Counter")
+    text_box = Text(title="Counter")
     grid.add(text_box)
 
     while True:

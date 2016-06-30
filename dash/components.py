@@ -63,9 +63,9 @@ class Panel:
         return
 
 
-class LiveTextBox(Panel):
+class Text(Panel):
     def __init__(self, title=None, text=""):
-        super(LiveTextBox, self).__init__()
+        super(Text, self).__init__()
         self.title = title
         self.text = text
 
@@ -75,10 +75,10 @@ class LiveTextBox(Panel):
             socketio.emit(self.id, text, namespace='/' + container.name)
 
     def render_html(self):
-        return render_template('textbox.html', id=self.id, text=self.text)
+        return render_template('text.html', id=self.id, text=self.text)
 
     def render_js(self):
-        return render_template('textbox.js', id=self.id)
+        return render_template('text.js', id=self.id)
 
 
 class Table(Panel):
