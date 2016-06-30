@@ -21,11 +21,11 @@ class Plugin:
 
 def load_plugins():
     sys.path.insert(0, plugins_path)
-    for f in os.listdir(plugins_path):
-        fname, ext = os.path.splitext(f)
-        if ext == '.py':
-            mod = __import__(fname)
-            setup_plugin(fname, mod.main)
+    for file in os.listdir(plugins_path):
+        name, ext = os.path.splitext(file)
+        mod = __import__(name)
+        if hasattr(mod, "main"):
+            setup_plugin(name, mod.main)
     sys.path.pop(0)
 
 
