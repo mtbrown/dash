@@ -1,3 +1,6 @@
+# Individual plugins should be in their own repo
+plugins/
+
 # PyCharm project files
 .idea/
 
