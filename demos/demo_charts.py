@@ -7,7 +7,7 @@ def main(grid):
     text_box = Text(title="Charts")
     grid.add(text_box)
 
-    bar_chart = BarChart()
+    bar_chart = BarChart(title="Sample", labels=("Red", "Blue", "Yellow", "Green", "Purple", "Orange"))
     grid.add(bar_chart)
 
     while True:

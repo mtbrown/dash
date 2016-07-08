@@ -114,4 +114,4 @@ class BarChart(Panel):
         return render_template('chart.html', id=self.id)
 
     def render_js(self):
-        return render_template('chart.js', id=self.id)
+        return render_template('chart.js', id=self.id, labels=self.labels)
