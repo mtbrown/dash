@@ -12,6 +12,12 @@ app.config['SECRET_KEY'] = 'secret!'
 app.debug = True
 
 
+@app.template_filter('quote')
+def quote(value):
+    """Wraps the value in quotes. Intended for template use."""
+    return '"{0}"'.format(value)
+
+
 @app.route('/')
 def index():
     return render_template('base.html', title="Dashboard")
