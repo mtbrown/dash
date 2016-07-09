@@ -1,6 +1,6 @@
 var ctx = document.getElementById("{{ id }}");
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: '{{ chart_type }}',
     data: {
         labels: [{{ labels|map('quote')|join(', ') }}],
         datasets: [{
