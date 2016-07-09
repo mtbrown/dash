@@ -30,3 +30,6 @@ class LineChart(Panel):
 
     def render_js(self):
         return render_template('chart.js', id=self.id, chart_type=self.chart_type, labels=self.labels)
+
+    def add_data(self, x, y):
+        self.emit(['add', [x, y]])
