@@ -1,11 +1,13 @@
-import sys
-import os
 import logging
+import os
+import sys
 import threading
 import time
+
 from flask import render_template
 
-from dash import app, components
+from . import app
+from .grid import Grid
 
 plugins_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "plugins"))  # ../plugins
 _plugins = []
@@ -15,7 +17,7 @@ class Plugin:
     def __init__(self, name, main):
         self.name = name
         self.main = main
-        self.grid = components.Grid(name)
+        self.grid = Grid(name)
         self.thread = None
 
 
