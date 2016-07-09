@@ -1,6 +1,5 @@
 from .panel import Panel
 from flask import render_template
-from .. import socketio
 
 
 class Text(Panel):
@@ -11,8 +10,7 @@ class Text(Panel):
 
     def update(self, text):
         self.text = text
-        for container in self.containers:
-            socketio.emit(self.id, text, namespace='/' + container.name)
+        self.emit(text)
 
     def render_html(self):
         return render_template('text.html', id=self.id, text=self.text)
@@ -33,9 +31,7 @@ class Table(Panel):
         if self.max_rows and len(self.rows) >= self.max_rows:
             self.rows.pop()
         self.rows.insert(0, row)
-
-        for container in self.containers:
-            socketio.emit(self.id, row, namespace='/' + container.name)
+        self.emit(row)
 
     def render_html(self):
         return render_template('table.html', id=self.id, headers=self.headers, rows=self.rows)
