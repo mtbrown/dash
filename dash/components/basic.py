@@ -20,7 +20,7 @@ class Text(Panel):
 
 
 class Table(Panel):
-    def __init__(self, title=None, rows=None, headers=None, max_rows=None):
+    def __init__(self, title=None, rows=None, headers=None, max_rows=0):
         super(Table, self).__init__()
         self.title = title
         self.headers = headers

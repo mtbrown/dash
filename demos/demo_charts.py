@@ -15,7 +15,7 @@ def main(grid):
     bar_chart = BarChart(title="Sample Bar Chart", labels=("Red", "Blue", "Yellow", "Green", "Purple", "Orange"))
     grid.add(bar_chart)
 
-    line_chart = LineChart(title="Sample Line Chart")
+    line_chart = LineChart(title="Sample Line Chart", max_points=100)
     grid.add(line_chart)
 
     x = 0
