@@ -4,8 +4,7 @@ from flask import render_template
 
 class Text(Panel):
     def __init__(self, title=None, text=""):
-        super(Text, self).__init__()
-        self.title = title
+        super().__init__(title=title)
         self.text = text
 
     def update(self, text):
@@ -21,8 +20,7 @@ class Text(Panel):
 
 class Table(Panel):
     def __init__(self, title=None, rows=None, headers=None, max_rows=0):
-        super(Table, self).__init__()
-        self.title = title
+        super().__init__(title=title)
         self.headers = headers
         self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows

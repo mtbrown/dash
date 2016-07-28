@@ -5,7 +5,8 @@ from .. import socketio
 class Panel:
     id_counter = 0
 
-    def __init__(self):
+    def __init__(self, title=None):
+        self.title = title
         self.containers = []  # grids that panel is currently contained in
         self.id = "panel" + str(Panel.id_counter)
         Panel.id_counter += 1

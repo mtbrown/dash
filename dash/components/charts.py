@@ -22,8 +22,7 @@ class Chart(Panel):
         raise NotImplementedError
 
     def __init__(self, title=None):
-        super(Chart, self).__init__()
-        self.title = title
+        super().__init__(title=title)
         self.labels = []
         self.data = []
         self.x_scale = ChartScale.Category
