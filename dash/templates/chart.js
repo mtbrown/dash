@@ -4,7 +4,7 @@ var {{ chart_var }} = new Chart(document.getElementById("{{ id }}"), {
     data: {
         labels: [{{ labels|map('quote')|join(', ') }}],
         datasets: [{
-            label: '# of Votes',
+            {% if description is not none %}label: {{ description|quote }},{% endif %}
             data: [{{ data|map('int')|join(', ') }}],
             borderWidth: 1
         }]
@@ -19,7 +19,8 @@ var {{ chart_var }} = new Chart(document.getElementById("{{ id }}"), {
             }],
             yAxes: [{
                 ticks: {
-                    beginAtZero: true
+                    {% if max_y is not none %}max: {{ max_y|int }},{% endif %}
+                    {% if min_y is not none %}min: {{ min_y|int }},{% endif %}
                 }
             }]
         }

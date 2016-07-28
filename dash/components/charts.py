@@ -21,18 +21,22 @@ class Chart(Panel):
         print("Chart class should never be instantiated, only extended")
         raise NotImplementedError
 
-    def __init__(self, title=None):
+    def __init__(self, title=None, min_y=None, max_y=None, description=None):
         super().__init__(title=title)
         self.labels = []
         self.data = []
         self.x_scale = ChartScale.Category
+        self.min_y = min_y
+        self.max_y = max_y
+        self.description = description
 
     def render_html(self):
         return render_template('chart.html', id=self.id)
 
     def render_js(self, **kwargs):
         return render_template('chart.js', id=self.id, chart_type=self.chart_type, labels=self.labels,
-                               data=self.data, x_scale=self.x_scale, **kwargs)
+                               data=self.data, x_scale=self.x_scale, min_y=self.min_y, max_y=self.max_y,
+                               description=self.description, **kwargs)
 
 
 class BarChart(Chart):
@@ -58,8 +62,8 @@ class BarChart(Chart):
 class LineChart(Chart):
     chart_type = 'line'
 
-    def __init__(self, title=None, max_points=0):
-        super().__init__(title=title)
+    def __init__(self, title=None, min_y=None, max_y=None, description=None, max_points=0):
+        super().__init__(title, min_y, max_y, description)
         self.max_points = max_points
 
     def add_point(self, label, value):

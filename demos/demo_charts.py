@@ -14,12 +14,12 @@ def main(grid):
     grid.add(text_box)
 
     bar_labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"]
-    bar_chart = BarChart(title="Sample Bar Chart")
+    bar_chart = BarChart(title="Sample Bar Chart", min_y=0, max_y=100, description="Usage")
     for label in bar_labels:
         bar_chart.add_bar(label, random.randint(0, 100))
     grid.add(bar_chart)
 
-    line_chart = LineChart(title="Sample Line Chart", max_points=100)
+    line_chart = LineChart(title="Sample Line Chart", max_points=100, description="Temperature")
     line_chart.x_scale = ChartScale.Time
     grid.add(line_chart)
 
