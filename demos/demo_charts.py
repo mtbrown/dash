@@ -1,4 +1,4 @@
-from dash.components import Text, BarChart, LineChart
+from dash.components import Text, BarChart, LineChart, ChartScale
 import logging
 import time
 from random import randint
@@ -15,7 +15,7 @@ def main(grid):
     bar_chart = BarChart(title="Sample Bar Chart", labels=("Red", "Blue", "Yellow", "Green", "Purple", "Orange"))
     grid.add(bar_chart)
 
-    line_chart = LineChart(title="Sample Line Chart", max_points=100)
+    line_chart = LineChart(title="Sample Line Chart", max_points=100, x_scale=ChartScale.Time)
     grid.add(line_chart)
 
     x = 0

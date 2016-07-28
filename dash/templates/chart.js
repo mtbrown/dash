@@ -11,6 +11,9 @@ var chart = new Chart(ctx, {
     },
     options: {
         scales: {
+            xAxes: [{
+                type: '{{ x_scale.value }}'
+            }],
             yAxes: [{
                 ticks: {
                     beginAtZero:true
