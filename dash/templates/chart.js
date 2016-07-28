@@ -5,7 +5,7 @@ var {{ chart_var }} = new Chart(document.getElementById("{{ id }}"), {
         labels: [{{ labels|map('quote')|join(', ') }}],
         datasets: [{
             label: '# of Votes',
-            data: [],
+            data: [{{ data|map('int')|join(', ') }}],
             borderWidth: 1
         }]
     },

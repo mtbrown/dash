@@ -33,7 +33,7 @@ class Chart(Panel):
 
     def render_js(self, **kwargs):
         return render_template('chart.js', id=self.id, chart_type=self.chart_type, labels=self.labels,
-                               x_scale=self.x_scale, **kwargs)
+                               data=self.data, x_scale=self.x_scale, **kwargs)
 
 
 class BarChart(Chart):
