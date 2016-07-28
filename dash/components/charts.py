@@ -2,6 +2,7 @@ import abc
 from enum import Enum
 from .panel import Panel
 from flask import render_template
+import datetime
 
 
 class ChartScale(Enum):
@@ -73,6 +74,12 @@ class LineChart(Chart):
         self.labels.append(label)
         self.data.append(value)
         self.emit(['add', [label, value]])
+
+    def add_point_time(self, time, value):
+        self.add_point(time.isoformat(), value)
+
+    def add_point_now(self, value):
+        self.add_point(datetime.datetime.now().isoformat(), value)
 
     def render_js(self, **kwargs):
         return super().render_js(max_points=self.max_points)

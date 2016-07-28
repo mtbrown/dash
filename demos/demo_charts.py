@@ -19,13 +19,13 @@ def main(grid):
         bar_chart.add_bar(label, random.randint(0, 100))
     grid.add(bar_chart)
 
-    line_chart = LineChart(title="Sample Line Chart", max_points=100, description="Temperature")
+    line_chart = LineChart(title="Sample Line Chart", max_points=100, max_y=100, description="Temperature")
     line_chart.x_scale = ChartScale.Time
     grid.add(line_chart)
 
     y = 50
     while True:
-        line_chart.add_point(datetime.datetime.now().isoformat(), y)
+        line_chart.add_point_now(y)
         y += random.randint(-10, 10)
         y = clamp(y, 0, 100)
 
