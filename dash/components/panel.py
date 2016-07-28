@@ -3,6 +3,8 @@ from .. import socketio
 
 
 class Panel:
+    __metaclass__ = abc.ABCMeta
+
     id_counter = 0
 
     def __init__(self, title=None):
