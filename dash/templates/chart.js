@@ -12,11 +12,14 @@ var {{ chart_var }} = new Chart(document.getElementById("{{ id }}"), {
     options: {
         scales: {
             xAxes: [{
-                type: '{{ x_scale.value }}'
+                type: '{{ x_scale.value }}',
+                time: {
+                    tooltipFormat: "YYYY-MM-DD hh:mm:ss a"
+                }
             }],
             yAxes: [{
                 ticks: {
-                    beginAtZero:true
+                    beginAtZero: true
                 }
             }]
         }

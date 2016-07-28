@@ -2,6 +2,7 @@ from dash.components import Text, BarChart, LineChart, ChartScale
 import logging
 import time
 import random
+import datetime
 
 
 def clamp(n, min_val, max_val):
@@ -19,13 +20,12 @@ def main(grid):
     grid.add(bar_chart)
 
     line_chart = LineChart(title="Sample Line Chart", max_points=100)
+    line_chart.x_scale = ChartScale.Time
     grid.add(line_chart)
 
-    x = 0
     y = 50
     while True:
-        line_chart.add_point(x, y)
-        x += 1
+        line_chart.add_point(datetime.datetime.now().isoformat(), y)
         y += random.randint(-10, 10)
         y = clamp(y, 0, 100)
 
