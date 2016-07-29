@@ -2,7 +2,6 @@ from dash.components import Text, BarChart, LineChart, ChartScale
 import logging
 import time
 import random
-import datetime
 
 
 def clamp(n, min_val, max_val):
