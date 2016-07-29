@@ -34,6 +34,12 @@ def test_grid_set_num_columns(grid):
 
     grid.num_columns = 5  # invalid, must divide evenly into 12
     assert grid.num_columns == 4  # should ignore invalid value and stay at 4
+    grid.num_columns = 0  # invalid, must be positive
+    assert grid.num_columns == 4
+    grid.num_columns = -1  # invalid, must be positive
+    assert grid.num_columns == 4
+    grid.num_columns = 13  # invalid, must be 12 or less
+    assert grid.num_columns == 4
 
     grid.num_columns = 2
     assert grid.num_columns == 2
@@ -53,4 +59,42 @@ def test_grid_add_remove_panels_multiple_columns(grid):
         assert len(grid.columns[i]) == 1
         grid.remove(text_boxes[i])
         assert len(grid.columns[i]) == 0
+
+
+def test_grid_add_panel_column_out_of_range(grid):
+    grid.num_columns = 4
+    text_box = Text()
+    grid.add(text_box, column=-1)
+    grid.add(text_box, column=4)
+
+    for column in grid.columns:
+        assert len(column) == 0
+    assert len(text_box.containers) == 0
+
+
+def test_grid_add_duplicate_panels(grid):
+    """Verify that when adding a duplicate panel to a grid, the second add is ignored."""
+    text_box = Text(title="Test", text="Hello")
+
+    grid.add(text_box, column=0)
+    grid.add(text_box, column=0)
+
+    assert len(grid.columns[0]) == 1
+    assert len(text_box.containers) == 1
+
+
+def test_grid_double_remove_panel(grid):
+    """Verify that when removing a panel from grid twice, the second remove is ignored."""
+    text_box = Text(title="Test", text="Hello")
+
+    grid.add(text_box, column=0)
+    assert len(grid.columns[0]) == 1
+    assert len(text_box.containers) == 1
+
+    grid.remove(text_box)
+    grid.remove(text_box)
+    assert len(grid.columns[0]) == 0
+    assert len(text_box.containers) == 0
+
+
 
