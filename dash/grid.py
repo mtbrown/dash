@@ -45,8 +45,8 @@ class Grid:
         into 12 (1, 2, 3, 4, 6, 12). If the number of columns becomes smaller than the old
         value, the panels contained in the last columns will be removed.
         """
-        if BOOTSTRAP_COLUMNS % num_columns != 0:
-            logging.error("Invalid columns value (%d) for grid %s. Value must divide evenly into %d.",
+        if num_columns <= 0 or BOOTSTRAP_COLUMNS % num_columns != 0:
+            logging.error("Invalid columns value (%d) for grid %s. Value must be a factor of %d.",
                           num_columns, self.name, BOOTSTRAP_COLUMNS)
             return
 
@@ -60,11 +60,11 @@ class Grid:
 
     def add(self, panel, column=0):
         if column < 0 or column >= self._num_columns:
-            logging.error("Unable to add panel %d to grid %s, invalid column index %d.",
+            logging.error("Unable to add %s to grid %s, invalid column index %d.",
                           panel.id, self.name, column)
             return
         if panel.id in self.panel_columns:
-            logging.info("Attempted to add duplicate panel %d to grid %s, ignoring.",
+            logging.info("Attempted to add duplicate %s to grid %s, ignoring.",
                          panel.id, self.name)
             return
 
@@ -74,7 +74,7 @@ class Grid:
 
     def remove(self, panel):
         if panel.id not in self.panel_columns:
-            logging.info("Attempted to remove non-existent panel %d from grid %s, ignoring.",
+            logging.info("Attempted to remove non-existent %s from grid %s, ignoring.",
                          panel.id, self.name)
             return
 
