@@ -3,11 +3,14 @@ from dash.components import Text
 
 
 def test_grid_basic(grid):
+    """Verify basic properties of a default grid."""
     assert grid.name == "test_grid"
     assert grid.num_columns == 1
+    assert grid.column_size == 12
 
 
 def test_grid_add_remove_panel(grid):
+    """Verify that a panel can be added to and removed from a simple, single-column grid."""
     text_box = Text(title="Test", text="hello")
     grid.add(text_box)
 
@@ -26,6 +29,7 @@ def test_grid_add_remove_panel(grid):
 
 
 def test_grid_set_num_columns(grid):
+    """Verify that num_columns cannot be set to invalid values. A valid value must be a factor of 12."""
     assert grid.num_columns == 1
     grid.num_columns = 2
     assert grid.num_columns == 2
@@ -45,7 +49,21 @@ def test_grid_set_num_columns(grid):
     assert grid.num_columns == 2
 
 
+def test_grid_column_size_update(grid):
+    """Verify that the column_size properly updates along with num_columns."""
+    assert grid.column_size == 12
+
+    grid.num_columns = 3
+    assert grid.column_size == 4
+    grid.num_columns = 6
+    assert grid.column_size == 2
+    grid.num_columns = 12
+    assert grid.column_size == 1
+
+
 def test_grid_add_remove_panels_multiple_columns(grid):
+    """Verify that panels are properly added to and removed from the correct column
+    when there are multiple columns."""
     num_columns = 3
     text_boxes = [Text(title="Text" + str(i)) for i in range(num_columns)]
 
@@ -62,6 +80,7 @@ def test_grid_add_remove_panels_multiple_columns(grid):
 
 
 def test_grid_add_panel_column_out_of_range(grid):
+    """Verify that panels cannot be added to a column that doesn't exist in the grid."""
     grid.num_columns = 4
     text_box = Text()
     grid.add(text_box, column=-1)
