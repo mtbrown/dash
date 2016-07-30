@@ -97,4 +97,19 @@ def test_grid_double_remove_panel(grid):
     assert len(text_box.containers) == 0
 
 
+def test_grid_reduce_columns_remove_panels(grid):
+    """Verify that when the number of columns is reduced, the panels in the rightmost columns
+    that are deleted are removed from the grid."""
+    text_box1 = Text(title="Test1")
+    text_box2 = Text(title="Test2")
 
+    grid.num_columns = 4
+    grid.add(text_box1, column=0)
+    grid.add(text_box2, column=3)
+
+    grid.num_columns = 1
+
+    assert len(grid.columns) == 1
+    assert len(grid.columns[0]) == 1
+    assert len(text_box1.containers) == 1  # should remain in grid
+    assert len(text_box2.containers) == 0  # should have been removed from grid
