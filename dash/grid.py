@@ -25,6 +25,7 @@ class Grid:
     def __init__(self, name):
         self.name = name  # name of plugin that owns grid
         self._num_columns = 1  # number of columns the grid contains
+        self.column_size = BOOTSTRAP_COLUMNS  # the size of each column in Bootstrap column units
         self.columns = [[]]  # list containing a list of panels for each column
         self.panel_columns = {}  # maps panel ids to the column they're contained in
 
@@ -57,6 +58,7 @@ class Grid:
                 panel.containers.remove(self)
             self.columns.pop(-1)
         self._num_columns = num_columns
+        self.column_size = BOOTSTRAP_COLUMNS / num_columns
 
     def add(self, panel, column=0):
         if column < 0 or column >= self._num_columns:

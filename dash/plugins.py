@@ -34,9 +34,9 @@ def load_plugins():
 def setup_plugin(fname, main):
     new = Plugin(fname, main)
     _plugins.append(new)
-    new.home_view = lambda: render_template('plugin/home.html', name=new.name, panels=new.grid.panels)
+    new.home_view = lambda: render_template('plugin/home.html', name=new.name, grid=new.grid)
     app.add_url_rule("/{0}".format(new.name), new.name, new.home_view)
-    new.log_view = lambda: render_template('plugin/log.html', name=new.name, panels=new.grid.panels)
+    new.log_view = lambda: render_template('plugin/log.html', name=new.name, grid=new.grid)
     app.add_url_rule("/{0}/log".format(new.name), "{0}_log".format(new.name), new.log_view)
 
 
