@@ -1,7 +1,8 @@
 import React from 'react';
+import { Button } from 'stardust';
 
 export class App extends React.Component {
    render() {
-      return <div>Hello World</div>;
+      return <Button>Hello</Button>;
    }
 }
