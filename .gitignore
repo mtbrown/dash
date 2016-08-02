@@ -1,6 +1,9 @@
 # Individual plugins should be in their own repo
 plugins/
 
+client/node_modules/
+client/public/
+
 # PyCharm project files
 .idea/
 
