@@ -10,6 +10,7 @@
     "babel-preset-react": "^6.11.1",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
+    "react-router": "^2.6.1",
     "stardust": "^0.27.2"
   },
   "devDependencies": {
@@ -17,6 +18,7 @@
     "webpack": "^1.13.1"
   },
   "scripts": {
+    "start": "webpack-dev-server --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
