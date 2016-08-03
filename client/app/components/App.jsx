@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button } from 'stardust';
 
-import { Navbar } from './Navbar.jsx';
+import { SidebarWrapper } from './SidebarWrapper.jsx';
 
 export class App extends React.Component {
    render() {
-      return <Navbar />;
+      return (
+         <SidebarWrapper />
+      );
    }
 }

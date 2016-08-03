@@ -8,11 +8,8 @@ export class Navbar extends React.Component {
 
       return (
          <div className="ui top fixed inverted menu">
-            <div className="header large item">{ this.props.title }</div>
             { navbarItemNodes }
-            <div className="right menu">
-               <DropdownMenu items={this.props.dropdownItems} />
-            </div>
+            
          </div>
       );
    }
