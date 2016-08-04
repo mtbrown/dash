@@ -2,18 +2,7 @@ import React from 'react';
 
 import { Sidebar } from './Sidebar.jsx';
 import { Grid } from './Grid.jsx';
-import { Navbar } from './Navbar.jsx';
 
-var navbarItems = [
-   {text: "Home", url: "/"},
-   {text: "Notifications", url: "/"},
-   {text: "Log", url: "/"}
-];
-
-var dropdownNavbarItems = [
-   {text: "Settings", url: "/"},
-   {text: "Logout", url: "/"}
-];
 
 export class SidebarWrapper extends React.Component {
    render() {
@@ -23,10 +12,6 @@ export class SidebarWrapper extends React.Component {
                <SidebarTitle />
                <ScriptListMenu />
             </div>
-            <Navbar
-               items={navbarItems}
-               dropdownItems={dropdownNavbarItems}
-            />
             <div className="pusher">
                <Grid />
             </div>
