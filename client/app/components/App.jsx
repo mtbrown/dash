@@ -14,19 +14,3 @@ export class App extends React.Component {
     );
   }
 }
-
-
-class SidebarWrapper extends React.Component {
-  render() {
-    return (
-      <div>
-        <div className="ui large left vertical visible menu inverted sidebar">
-          <Sidebar />
-        </div>
-        <div className="pusher">
-          <Content />
-        </div>
-      </div>
-    );
-  }
-}
