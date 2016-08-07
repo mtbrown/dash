@@ -4,10 +4,13 @@ import classNames from 'classnames';
 var scriptList = [
   {id: "thermometer", title: "Thermometer", status: "ok", notificationCount: 8},
   {id: "podcasts", title: "Podcasts", status: "ok", notificationCount: 0},
-  {id: "yt_archive", title: "YouTube Archive", status: "ok", notificationCount: 3},
+  {id: "yt_archive", title: "YouTube Archive", status: "warning", notificationCount: 3},
   {id: "test", title: "Test", status: "error", notificationCount: 7},
-  {id: "wow", title: "Wow", status: "ok", notificationCount: 12}
+  {id: "wow", title: "Wow", status: "ok", notificationCount: 1204}
 ];
+
+
+const statusColorMap = {ok: "primary", warning: "warning", error: "danger"};
 
 
 export class Sidebar extends React.Component {
@@ -57,7 +60,7 @@ class SidebarMenuItem extends React.Component {
     return (
       <li>
         <a href={this.props.href}>
-          <i className={iconClass}></i>
+          <i className={iconClass} style={{margin: 5}}></i>
           {this.props.text}
         </a>
       </li>
@@ -73,7 +76,7 @@ class ScriptListMenu extends React.Component {
         <ScriptListItem
           active={false}
           label={script.notificationCount}
-          color={script.status == "ok" ? 'teal' : 'red'}
+          status={script.status}
           href={'/scripts/' + script.id + '/'}
           text={script.title}
           key={script.id}
@@ -82,7 +85,7 @@ class ScriptListMenu extends React.Component {
     });
 
     return (
-      <div className="list-group">
+      <div className="list-group" style={{margin: 15}}>
         {scriptItemNodes}
       </div>
     );
@@ -92,13 +95,13 @@ class ScriptListMenu extends React.Component {
 
 class ScriptListItem extends React.Component {
   render() {
-    var itemClass = classNames('list-group-item', {'active': this.props.active});
-    var labelClass = classNames('ui', this.props.color,
-      {'left pointing': this.props.active}, 'label');
+    var itemClass = classNames('list-group-item', {'active': this.props.active}, 'small');
+    var labelClass = classNames('pull-right', 'label', 'label-' + statusColorMap[this.props.status]);
 
     return (
       <a href={this.props.href} className={itemClass}>
         {this.props.text}
+        <span className={labelClass} style={{fontSize: "90%"}}>{this.props.label}</span>
       </a>
     );
   }
