@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Navigation} from './Navigation/Navigation.jsx';
-import {Content} from './Content.jsx';
+import {Content} from './Views/Content.jsx';
 
 
 export class App extends React.Component {
@@ -9,7 +9,7 @@ export class App extends React.Component {
     return (
       <div>
         <Navigation />
-        <Content />
+        {this.props.children}
       </div>
     );
   }

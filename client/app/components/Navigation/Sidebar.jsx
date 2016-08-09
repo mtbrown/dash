@@ -1,5 +1,6 @@
 import React from 'react';
-import classNames from 'classnames';
+import classNames from 'classnames'
+import { Link } from 'react-router';
 
 var scriptList = [
   {id: "thermometer", title: "Thermometer", status: "ok", notificationCount: 8},
@@ -22,6 +23,7 @@ export class Sidebar extends React.Component {
             <SidebarSearch />
             <SidebarMenuItem icon="fa-dashboard" text="Dashboard" href="/" />
             <SidebarMenuItem icon="fa-server" text="System" href="/system/" />
+            <SidebarMenuItem icon="fa-cogs" text="Settings" href="/settings/" />
             <ScriptListMenu scriptList={scriptList} />
           </ul>
         </div>
@@ -59,10 +61,10 @@ class SidebarMenuItem extends React.Component {
     let iconClass = classNames('fa', this.props.icon, 'fa-fw');
     return (
       <li>
-        <a href={this.props.href}>
+        <Link to={this.props.href}>
           <i className={iconClass} style={{margin: 5}}></i>
           {this.props.text}
-        </a>
+        </Link>
       </li>
     );
   }
