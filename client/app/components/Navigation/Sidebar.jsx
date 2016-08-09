@@ -61,7 +61,7 @@ class SidebarMenuItem extends React.Component {
     let iconClass = classNames('fa', this.props.icon, 'fa-fw');
     return (
       <li>
-        <Link to={this.props.href}>
+        <Link to={this.props.href} activeClassName="active">
           <i className={iconClass} style={{margin: 5}}></i>
           {this.props.text}
         </Link>
