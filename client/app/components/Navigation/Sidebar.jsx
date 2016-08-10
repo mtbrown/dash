@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames'
-import { Link } from 'react-router';
+import { Link, IndexLink } from 'react-router';
 
 var scriptList = [
   {id: "thermometer", title: "Thermometer", status: "ok", notificationCount: 8},
@@ -21,9 +21,9 @@ export class Sidebar extends React.Component {
         <div className="sidebar-nav navbar-collapse">
           <ul className="nav" id="side-menu">
             <SidebarSearch />
-            <SidebarMenuItem icon="fa-dashboard" text="Dashboard" href="/" />
-            <SidebarMenuItem icon="fa-server" text="System" href="/system/" />
-            <SidebarMenuItem icon="fa-cogs" text="Settings" href="/settings/" />
+            <SidebarMenuItem icon="fa-dashboard" text="Dashboard" link="/" />
+            <SidebarMenuItem icon="fa-server" text="System" link="/system" />
+            <SidebarMenuItem icon="fa-cogs" text="Settings" link="/settings" />
             <ScriptListMenu scriptList={scriptList} />
           </ul>
         </div>
@@ -61,10 +61,10 @@ class SidebarMenuItem extends React.Component {
     let iconClass = classNames('fa', this.props.icon, 'fa-fw');
     return (
       <li>
-        <Link to={this.props.href} activeClassName="active">
+        <IndexLink to={this.props.link} activeClassName="active">
           <i className={iconClass} style={{margin: 5}}></i>
           {this.props.text}
-        </Link>
+        </IndexLink>
       </li>
     );
   }
