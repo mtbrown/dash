@@ -10,6 +10,7 @@ export class Content extends React.Component {
             <h1 className="page-header">{this.props.title}</h1>
           </div>
         </div>
+        { this.props.children }
       </div>
     );
   }

@@ -11,7 +11,7 @@ var scriptList = [
 ];
 
 
-const statusColorMap = {ok: "primary", warning: "warning", error: "danger"};
+const statusColorMap = {ok: "info", warning: "warning", error: "danger"};
 
 
 export class Sidebar extends React.Component {
@@ -79,7 +79,7 @@ class ScriptListMenu extends React.Component {
           active={false}
           label={script.notificationCount}
           status={script.status}
-          href={'/scripts/' + script.id + '/'}
+          href={'/scripts/' + script.id}
           text={script.title}
           key={script.id}
         />
@@ -97,14 +97,13 @@ class ScriptListMenu extends React.Component {
 
 class ScriptListItem extends React.Component {
   render() {
-    var itemClass = classNames('list-group-item', {'active': this.props.active}, 'small');
     var labelClass = classNames('pull-right', 'label', 'label-' + statusColorMap[this.props.status]);
 
     return (
-      <a href={this.props.href} className={itemClass}>
+      <Link to={this.props.href} className="list-group-item small" activeClassName="list-group-item active small">
         {this.props.text}
         <span className={labelClass} style={{fontSize: "90%"}}>{this.props.label}</span>
-      </a>
+      </Link>
     );
   }
 }

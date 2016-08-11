@@ -7,14 +7,16 @@ import { App } from './components/App.jsx';
 import { Dashboard  } from './components/Views/Dashboard.jsx';
 import { Settings } from './components/Views/Settings.jsx';
 import { System } from './components/Views/System.jsx';
+import { Script } from './components/Views/Script.jsx';
 
 const routes = {
   path: '/',
   component: App,
   indexRoute: {component: Dashboard},
   childRoutes: [
-    {path: 'settings', component: Settings},
-    {path: 'system', component: System}
+    {path: '/settings', component: Settings},
+    {path: '/system', component: System},
+    {path: '/scripts/:scriptId', component: Script}
   ]
 };
 
