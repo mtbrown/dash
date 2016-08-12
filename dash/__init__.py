@@ -15,7 +15,7 @@ app.debug = True
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
-    app.send_static_file('index.html')
+    return app.send_static_file('index.html')
 
 
 @app.template_filter('quote')
