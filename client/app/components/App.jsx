@@ -3,13 +3,13 @@ import io from 'socket.io-client';
 
 import {Navigation} from './Navigation/Navigation.jsx';
 
-export const socket = io.connect();
+export const socket = io.connect('/api');
 
 export class App extends React.Component {
   constructor() {
     super();
     socket.on('connect', () => {
-      console.log("Connected successfully");
+      console.log("Connected successfully!");
     })
   }
 

@@ -2,6 +2,8 @@ import React from 'react';
 import classNames from 'classnames'
 import { Link, IndexLink } from 'react-router';
 
+import { socket } from '../App.jsx';
+
 var scriptList = [
   {id: "thermometer", title: "Thermometer", status: "ok", notificationCount: 8},
   {id: "podcasts", title: "Podcasts", status: "ok", notificationCount: 0},
@@ -72,6 +74,17 @@ class SidebarMenuItem extends React.Component {
 
 
 class ScriptListMenu extends React.Component {
+  constructor() {
+    super();
+
+    socket.on('script_list', (message) => {
+      console.log("Received " + message + " from script_list listener");
+    });
+
+    socket.send({action: "retrieve", target: "script_list"});
+    console.log("Emitting");
+  }
+
   render() {
     var scriptItemNodes = this.props.scriptList.map(function (script) {
       return (
