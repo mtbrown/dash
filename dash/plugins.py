@@ -3,6 +3,7 @@ import os
 import sys
 import threading
 import time
+import enum
 
 from flask import render_template
 
@@ -13,11 +14,20 @@ plugins_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir
 _plugins = []
 
 
+class ScriptStatus(enum.Enum):
+    Ok = "ok"
+    Warning = "warning"
+    Error = "error"
+
+
 class Plugin:
-    def __init__(self, name, main):
-        self.name = name
+    def __init__(self, id, main):
+        self.id = id  # name of module/package containing script
+        self.title = id
+        self.status = ScriptStatus.Ok
+        self.label = 0
         self.main = main
-        self.grid = Grid(name)
+        self.grid = Grid(id)
         self.thread = None
 
 
@@ -34,10 +44,10 @@ def load_plugins():
 def setup_plugin(fname, main):
     new = Plugin(fname, main)
     _plugins.append(new)
-    new.home_view = lambda: render_template('plugin/home.html', name=new.name, grid=new.grid)
-    app.add_url_rule("/{0}".format(new.name), new.name, new.home_view)
-    new.log_view = lambda: render_template('plugin/log.html', name=new.name, grid=new.grid)
-    app.add_url_rule("/{0}/log".format(new.name), "{0}_log".format(new.name), new.log_view)
+    new.home_view = lambda: render_template('plugin/home.html', name=new.id, grid=new.grid)
+    app.add_url_rule("/{0}".format(new.id), new.id, new.home_view)
+    new.log_view = lambda: render_template('plugin/log.html', name=new.id, grid=new.grid)
+    app.add_url_rule("/{0}/log".format(new.id), "{0}_log".format(new.id), new.log_view)
 
 
 class PluginScheduler(threading.Thread):

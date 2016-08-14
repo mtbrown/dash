@@ -4,14 +4,6 @@ import { Link, IndexLink } from 'react-router';
 
 import { socket } from '../App.jsx';
 
-var scriptList = [
-  {id: "thermometer", title: "Thermometer", status: "ok", notificationCount: 8},
-  {id: "podcasts", title: "Podcasts", status: "ok", notificationCount: 0},
-  {id: "yt_archive", title: "YouTube Archive", status: "warning", notificationCount: 3},
-  {id: "test", title: "Test", status: "error", notificationCount: 7},
-  {id: "wow", title: "Wow", status: "ok", notificationCount: 1204}
-];
-
 
 const statusColorMap = {ok: "info", warning: "warning", error: "danger"};
 
@@ -26,7 +18,7 @@ export class Sidebar extends React.Component {
             <SidebarMenuItem icon="fa-dashboard" text="Dashboard" link="/" />
             <SidebarMenuItem icon="fa-server" text="System" link="/system" />
             <SidebarMenuItem icon="fa-cogs" text="Settings" link="/settings" />
-            <ScriptListMenu scriptList={scriptList} />
+            <ScriptListMenu />
           </ul>
         </div>
       </div>
@@ -74,23 +66,31 @@ class SidebarMenuItem extends React.Component {
 
 
 class ScriptListMenu extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {scriptList: []};
 
-    socket.on('script_list', (message) => {
-      console.log("Received " + message + " from script_list listener");
+    socket.on('scriptList', (message) => {
+      console.log("Received " + message + " from scriptList listener");
+      this.setState({scriptList: message.response.scriptList});
     });
 
-    socket.send({action: "retrieve", target: "script_list"});
+    socket.send({action: "retrieve", target: "scriptList"});
     console.log("Emitting");
   }
 
   render() {
+    return <ScriptList scriptList={this.state.scriptList} />
+  }
+}
+
+
+class ScriptList extends React.Component {
+  render() {
     var scriptItemNodes = this.props.scriptList.map(function (script) {
       return (
         <ScriptListItem
-          active={false}
-          label={script.notificationCount}
+          label={script.label}
           status={script.status}
           href={'/scripts/' + script.id}
           text={script.title}

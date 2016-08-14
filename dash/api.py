@@ -21,7 +21,7 @@ class RequestAction(enum.Enum):
 class ResponseStatus(enum.Enum):
     Success = "success"  # all went well, some data was returned
     Fail = "fail"  # there was a problem with the request
-    Error = "error"  # an error occurred when processing the request
+    Error = "error"  # request was valid, but an error occurred when processing the request
 
 
 # Binds a handler function to a specific request action and target combination
@@ -30,24 +30,27 @@ def bind_handler(target, action):
         @wraps(func)  # preserve wrapped function's metadata
         def wrapper(*args, **kwargs):
             status, response = func(*args, **kwargs)  # get generated response from handler
-            message = json.dumps({
+            message = {
                 "status": status.value,
                 "response": response
-            })
+            }
             socket.emit(target, message, namespace='/api')  # emit response
         request_handlers[(action, target)] = wrapper  # bind newly wrapped function
         return wrapper
     return decorator
 
 
-@bind_handler("script_list", RequestAction.Retrieve)
+@bind_handler("scriptList", RequestAction.Retrieve)
 def get_script_list(request):
     response = []
     for script in list_plugins():
         response.append({
-            "id": script.name
+            "id": script.id,
+            "title": script.title,
+            "status": script.status.value,
+            "label": str(script.label)
         })
-    return ResponseStatus.Success, {"scripts": response}
+    return ResponseStatus.Success, {"scriptList": response}
 
 
 @socket.on('connect', namespace='/api')
