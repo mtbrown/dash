@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 
 import { Router, browserHistory } from 'react-router';
 
-import { App } from './components/App.jsx';
-import { Dashboard  } from './components/Views/Dashboard.jsx';
-import { Settings } from './components/Views/Settings.jsx';
-import { System } from './components/Views/System.jsx';
-import { Script } from './components/Views/Script.jsx';
+import { App } from './modules/App.jsx';
+import { Dashboard  } from './modules/views/Dashboard.jsx';
+import { Settings } from './modules/views/Settings.jsx';
+import { System } from './modules/views/System.jsx';
+import { Script } from './modules/views/Script.jsx';
 
 const routes = {
   path: '/',

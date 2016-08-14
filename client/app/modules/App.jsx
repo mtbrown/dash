@@ -1,7 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-import {Navigation} from './Navigation/Navigation.jsx';
+import {Navigation} from './navigation/Navigation.jsx';
 
 export const socket = io.connect('/api');
 
