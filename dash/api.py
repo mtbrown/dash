@@ -1,64 +1,51 @@
 import json
 import enum
 from functools import wraps
-import flask
+from flask_restful import Api, Resource
+from flask import Blueprint
 
-from . import socketio as socket
-from .plugins import list_plugins
-
-
-request_handlers = {}
+from .plugins import list_plugins, get_script_by_id
 
 
-class RequestAction(enum.Enum):
-    Create = "create"
-    Retrieve = "retrieve"
-    Update = "update"
-    Delete = "delete"
-    Flush = "flush"
+api = Api(Blueprint('api', __name__))
 
 
-class ResponseStatus(enum.Enum):
-    Success = "success"  # all went well, some data was returned
-    Fail = "fail"  # there was a problem with the request
-    Error = "error"  # request was valid, but an error occurred when processing the request
-
-
-# Binds a handler function to a specific request action and target combination
-def bind_handler(target, action):
-    def decorator(func):
-        @wraps(func)  # preserve wrapped function's metadata
-        def wrapper(*args, **kwargs):
-            status, response = func(*args, **kwargs)  # get generated response from handler
-            message = {
-                "status": status.value,
-                "response": response
-            }
-            socket.emit(target, message, namespace='/api')  # emit response
-        request_handlers[(action, target)] = wrapper  # bind newly wrapped function
-        return wrapper
-    return decorator
-
-
-@bind_handler("scriptList", RequestAction.Retrieve)
-def get_script_list(request):
-    response = []
-    for script in list_plugins():
-        response.append({
+@api.resource('/scripts')
+class Scripts(Resource):
+    @staticmethod
+    def get():
+        return [{
             "id": script.id,
             "title": script.title,
             "status": script.status.value,
             "label": str(script.label)
-        })
-    return ResponseStatus.Success, {"scriptList": response}
+        } for script in list_plugins()]
 
 
-@socket.on('connect', namespace='/api')
+@api.resource('/scripts/<script_id>/grid')
+class ScriptGrid(Resource):
+    @staticmethod
+    def get(script_id):
+        response = []
+        try:
+            script = get_script_by_id(script_id)
+        except ValueError:
+            return {"error": "Invalid script ID: {0}".format(script_id)}, 400
+
+        for column in script.grid:
+            response.append([{
+                "id": component.id,
+                "type": component.__class__.__name__
+            } for component in column])
+        return {"columns": response}
+
+
+# @socket.on('connect', namespace='/api')
 def test_connect():
     print("Connected successfully")
 
 
-@socket.on('message', namespace='/api')
+# @socket.on('message', namespace='/api')
 def message_handler(message):
     print("Received: " + str(message))
 
@@ -73,20 +60,3 @@ def message_handler(message):
     else:
         print("Invalid message type")
         return
-
-    if "action" not in json_message or "target" not in json_message:
-        print("Invalid request, missing action or target argument")
-        return
-
-    try:
-        request_action = RequestAction(json_message["action"])
-    except ValueError:
-        print("Invalid action argument")
-        return
-
-    key = (request_action, json_message["target"])
-    if key in request_handlers:
-        print("Calling " + str(request_handlers[key]))
-        request_handlers[key](json_message)
-    else:
-        print("Invalid request, no handler found")

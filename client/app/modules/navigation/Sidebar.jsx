@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { Link, IndexLink } from 'react-router';
 
 import { socket } from '../App.jsx';
+import { get } from '../utils/api.js';
 
 
 const statusColorMap = {ok: "info", warning: "warning", error: "danger"};
@@ -69,14 +70,13 @@ class ScriptListMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {scriptList: []};
+  }
 
-    socket.on('scriptList', (message) => {
-      console.log("Received " + message + " from scriptList listener");
-      this.setState({scriptList: message.response.scriptList});
-    });
+  async componentWillMount() {
+    const scriptList = await get('/api/scripts');
+    console.log(scriptList);
 
-    socket.send({action: "retrieve", target: "scriptList"});
-    console.log("Emitting");
+    this.setState({scriptList: scriptList})
   }
 
   render() {

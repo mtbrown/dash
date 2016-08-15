@@ -9,7 +9,7 @@ var HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 });
 
 module.exports = {
-  entry: './app/main.js',
+  entry: ['./app/main.js'],
   output: {
     path: 'public',
     filename: 'bundle.js'
@@ -20,9 +20,6 @@ module.exports = {
         test: /.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        query: {
-          presets: ['es2015', 'react']
-        }
       }
     ]
   },

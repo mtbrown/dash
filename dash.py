@@ -1,5 +1,5 @@
 import logging
-from dash import app, socketio, plugins, systeminfo, api
+from dash import app, socketio, plugins, systeminfo
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     # add plugin list to template renderer environment
     @app.context_processor
     def inject_plugin_list():
-        return {'plugins': {p.name for p in plugin_list}}
+        return {'plugins': {p.id for p in plugin_list}}
 
     socketio.init_app(app)
     socketio.run(app, use_reloader=False, host='0.0.0.0')

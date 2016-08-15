@@ -7,11 +7,11 @@ import enum
 
 from flask import render_template
 
-from . import app
 from .grid import Grid
 
 plugins_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "plugins"))  # ../plugins
 _plugins = []
+script_id_map = {}
 
 
 class ScriptStatus(enum.Enum):
@@ -29,6 +29,8 @@ class Plugin:
         self.main = main
         self.grid = Grid(id)
         self.thread = None
+        _plugins.append(self)
+        script_id_map[id] = self
 
 
 def load_plugins():
@@ -43,11 +45,8 @@ def load_plugins():
 
 def setup_plugin(fname, main):
     new = Plugin(fname, main)
-    _plugins.append(new)
     new.home_view = lambda: render_template('plugin/home.html', name=new.id, grid=new.grid)
-    app.add_url_rule("/{0}".format(new.id), new.id, new.home_view)
     new.log_view = lambda: render_template('plugin/log.html', name=new.id, grid=new.grid)
-    app.add_url_rule("/{0}/log".format(new.id), "{0}_log".format(new.id), new.log_view)
 
 
 class PluginScheduler(threading.Thread):
@@ -84,3 +83,7 @@ def start_plugins():
 
 def list_plugins():
     return _plugins
+
+
+def get_script_by_id(script_id):
+    return script_id_map[script_id]
