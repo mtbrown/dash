@@ -74,8 +74,6 @@ class ScriptListMenu extends React.Component {
 
   async componentWillMount() {
     const scriptList = await get('/api/scripts');
-    console.log(scriptList);
-
     this.setState({scriptList: scriptList})
   }
 

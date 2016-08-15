@@ -66,10 +66,10 @@ class PluginScheduler(threading.Thread):
             logging.info("Checking status of plugin threads")
             for plugin in _plugins:
                 if not plugin.thread:
-                    logging.info("Creating new thread: {0}".format(plugin.name))
+                    logging.info("Creating new thread: {0}".format(plugin.id))
                     plugin.thread = plugin.thread = threading.Thread(target=plugin.main, args=(plugin.grid, ))
                 if not plugin.thread.is_alive():
-                    logging.info("Starting thread: {0}".format(plugin.name))
+                    logging.info("Starting thread: {0}".format(plugin.id))
                     plugin.thread.start()
             time.sleep(10)
         logging.info("PluginScheduler is stopping")

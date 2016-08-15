@@ -2,24 +2,36 @@ import React from 'react';
 
 import { Content } from './Content.jsx';
 import { socket } from '../App.jsx';
+import { get } from '../utils/api.js';
 
 export class Script extends React.Component {
   constructor() {
     super();
-    this.state = {scripts: {}};
-    console.log("constructor");
+    this.state = {grid: {columns: []}};
+    this.fetchGrid = this.fetchGrid.bind(this);
+  }
 
-    socket.on("scriptGrid", (message) => {
-      if (message.status != "success") {
-        console.log(message.response.message);
-        return;
-      }
-      this.setState({scripts: this.state.scripts})
-    })
+  async fetchGrid() {
+    if(this.ignoreLastFetch) {
+      return;
+    }
+    const response = await get(`/api/scripts/${this.props.params.scriptId}/grid`);
+    this.setState({grid: response});
+    console.log("grid: " + response)
   }
 
   componentDidMount() {
-    console.log("componentDidMount");
+    this.fetchGrid();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.params.scriptId != this.props.params.scriptId) {
+      this.fetchGrid();
+    }
+  }
+
+  componentWillUnmount() {
+    this.ignoreLastFetch = true;
   }
 
   render() {
@@ -29,4 +41,9 @@ export class Script extends React.Component {
       </Content>
     );
   }
+}
+
+
+class ScriptView extends React.Component {
+
 }

@@ -10,7 +10,7 @@ class Panel:
     def __init__(self, title=None):
         self.title = title
         self.containers = []  # grids that panel is currently contained in
-        self.id = "panel" + str(Panel.id_counter)
+        self.id = Panel.id_counter
         Panel.id_counter += 1
 
     @abc.abstractmethod
