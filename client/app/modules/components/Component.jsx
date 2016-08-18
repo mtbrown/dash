@@ -11,32 +11,28 @@ const componentMap = {
 export class Component extends React.Component {
   constructor() {
     super();
-    this.state = {};
-    this.handleChange = this.handleChange.bind(this);
+    this.state = {data: {}};
+    this.dataHandler = this.dataHandler.bind(this);
   }
 
   async componentDidMount() {
     const response = await get(`/api/components/${this.props.id}`);
-    this.setState(response);
-
-    socket.on(this.props.id, (data) => {
-      this.handleChange(data);
-    });
-
+    this.dataHandler(response);
+    socket.on(this.props.id, this.dataHandler);
     socket.emit('join', {room: this.props.id});
   }
 
   componentWillUnmount() {
     socket.emit('leave', {room: this.props.id});
+    socket.removeListener(this.props.id, this.dataHandler);
   }
 
-  handleChange(newState) {
-    console.log(`id: ${this.props.id}, newState: ${newState}`);
-    this.setState(newState);
+  dataHandler(newData) {
+    this.setState({data: newData});
   }
 
   render() {
-    return <ComponentView id={this.props.id} type={this.props.type} data={this.state} />;
+    return <ComponentView id={this.props.id} type={this.props.type} data={this.state.data} />;
   }
 }
 
