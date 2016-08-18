@@ -12,6 +12,7 @@ export class Component extends React.Component {
   constructor() {
     super();
     this.state = {};
+    this.handleChange = this.handleChange.bind(this);
   }
 
   async componentDidMount() {
@@ -19,7 +20,6 @@ export class Component extends React.Component {
     this.setState(response);
 
     socket.on(this.props.id, (data) => {
-      console.log(`Received from ${this.props.id}: ` + data);
       this.handleChange(data);
     });
 
@@ -31,6 +31,7 @@ export class Component extends React.Component {
   }
 
   handleChange(newState) {
+    console.log(`id: ${this.props.id}, newState: ${newState}`);
     this.setState(newState);
   }
 
@@ -42,8 +43,6 @@ export class Component extends React.Component {
 
 class ComponentView extends React.Component {
   render() {
-    console.log("Type: " + this.props.type);
-    console.log("Result: " + componentMap[this.props.type]);
     return componentMap[this.props.type]({
       id: this.props.id,
       data: this.props.data

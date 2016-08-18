@@ -26,8 +26,7 @@ class Panel:
 
     def emit(self, data):
         """Emit a SocketIO message to each grid that this panel is currently contained in."""
-        for container in self.containers:
-            socketio.emit(self.id, data, namespace='/' + container.name)
+        pass
 
 
 def get_component_by_id(component_id):
