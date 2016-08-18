@@ -5,6 +5,7 @@ from flask_restful import Api, Resource
 from flask import Blueprint
 
 from .plugins import list_plugins, get_script_by_id
+from .components.panel import get_component_by_id
 
 
 api = Api(Blueprint('api', __name__))
@@ -38,6 +39,17 @@ class ScriptGrid(Resource):
                 "type": component.__class__.__name__
             } for component in column])
         return {"columns": response}
+
+
+@api.resource('/components/<component_id>')
+class Component(Resource):
+    @staticmethod
+    def get(component_id):
+        try:
+            component = get_component_by_id(component_id)
+        except ValueError:
+            return {"error": "Invalid component ID: {0}".format(component_id)}, 400
+        return component.state
 
 
 # @socket.on('connect', namespace='/api')

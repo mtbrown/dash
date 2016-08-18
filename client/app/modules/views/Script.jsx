@@ -1,7 +1,8 @@
 import React from 'react';
+import { Grid, Row, Col } from 'react-bootstrap';
 
 import { Content } from './Content.jsx';
-import { socket } from '../App.jsx';
+import { Component } from '../components/Component.jsx';
 import { get } from '../utils/api.js';
 
 export class Script extends React.Component {
@@ -37,7 +38,7 @@ export class Script extends React.Component {
   render() {
     return (
       <Content title="Script">
-        {this.props.params.scriptId}
+        <ScriptView grid={this.state.grid} />
       </Content>
     );
   }
@@ -45,5 +46,29 @@ export class Script extends React.Component {
 
 
 class ScriptView extends React.Component {
+  render() {
+    const columnSize = 12 / this.props.grid.columns.length;
 
+    const scriptComponents = this.props.grid.columns.map((column, i) => {
+      return (
+        <Col md={columnSize} key={i}>
+          {column.map((component) => {
+            return (
+              <Row key={component.id}>
+                <Component id={component.id} type={component.type} key={component.id} />
+              </Row>
+            );
+          })}
+        </Col>
+      );
+    });
+
+    return (
+      <Grid>
+        <Row>
+          {scriptComponents}
+        </Row>
+      </Grid>
+    )
+  }
 }

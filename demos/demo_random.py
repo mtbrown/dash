@@ -12,7 +12,7 @@ def main(grid):
     grid.add(rand_text)
 
     while True:
-        rand_text.update(str(randint(0, 99)))
+        rand_text.text = str(randint(0, 99))
         time.sleep(1)
 
 

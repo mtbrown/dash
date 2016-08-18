@@ -10,7 +10,7 @@ def main(grid):
     grid.add(text_box)
 
     while True:
-        text_box.update("count is {0}".format(count))
+        text_box.text = "count is {0}".format(count)
 
         grid.logger.debug("count is {0}".format(count))
         count += 1

@@ -14,7 +14,7 @@ def main(grid):
 
     while True:
         for text_box in text_boxes:
-            text_box.update(str(random.randint(0, 100)))
+            text_box.text = str(random.randint(0, 100))
 
         time.sleep(1)
 

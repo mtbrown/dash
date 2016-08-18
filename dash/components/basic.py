@@ -5,11 +5,23 @@ from flask import render_template
 class Text(Panel):
     def __init__(self, title=None, text=""):
         super().__init__(title=title)
+        self._text = ""
         self.text = text
 
-    def update(self, text):
-        self.text = text
-        self.emit(text)
+    @property
+    def state(self):
+        return {
+            "text": self.text
+        }
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text):
+        self._text = text
+        self.emit_state()
 
     def render_html(self):
         return render_template('text.html', id=self.id, text=self.text)
