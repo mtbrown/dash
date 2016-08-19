@@ -52,15 +52,15 @@ class ScriptView extends React.Component {
     const scriptComponents = this.props.grid.columns.map((column, i) => {
       return (
         <Col md={columnSize} key={i}>
-          {column.map((component) => {
-            return (
-              <Row key={component.id}>
-                <Panel>
+          <Col md={12} key={i}>
+            {column.map((component) => {
+              return (
+                <Row key={component.id}>
                   <Component id={component.id} type={component.type} key={component.id} />
-                </Panel>
-              </Row>
-            );
-          })}
+                </Row>
+              );
+            })}
+          </Col>
         </Col>
       );
     });
