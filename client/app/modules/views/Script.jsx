@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col, Panel } from 'react-bootstrap';
 
 import { Content } from './Content.jsx';
 import { Component } from '../components/Component.jsx';
@@ -55,7 +55,9 @@ class ScriptView extends React.Component {
           {column.map((component) => {
             return (
               <Row key={component.id}>
-                <Component id={component.id} type={component.type} key={component.id} />
+                <Panel>
+                  <Component id={component.id} type={component.type} key={component.id} />
+                </Panel>
               </Row>
             );
           })}
