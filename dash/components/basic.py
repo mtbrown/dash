@@ -37,11 +37,18 @@ class Table(Panel):
         self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows
 
+    @property
+    def state(self):
+        return {
+            "headers": self.headers,
+            "rows": self.rows
+        }
+
     def add_row(self, row):
         if self.max_rows and len(self.rows) >= self.max_rows:
             self.rows.pop()
         self.rows.insert(0, row)
-        self.emit(row)
+        self.emit_state()
 
     def render_html(self):
         return render_template('table.html', id=self.id, headers=self.headers, rows=self.rows)
