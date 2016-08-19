@@ -66,7 +66,7 @@ class ScriptView extends React.Component {
     });
 
     return (
-      <Grid>
+      <Grid fluid={true}>
         <Row>
           {scriptComponents}
         </Row>
