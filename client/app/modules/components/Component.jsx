@@ -4,14 +4,15 @@ import { socket } from '../App.jsx';
 
 
 const componentMap = {
-  Text: React.createFactory(require('./Text.jsx'))
+  Text: React.createFactory(require('./Text.jsx')),
+  Table: React.createFactory(require('./Table.jsx'))
 };
 
 
 export class Component extends React.Component {
   constructor() {
     super();
-    this.state = {data: {}};
+    this.state = {loading: true, data: {}};
     this.dataHandler = this.dataHandler.bind(this);
   }
 
@@ -28,10 +29,13 @@ export class Component extends React.Component {
   }
 
   dataHandler(newData) {
-    this.setState({data: newData});
+    this.setState({loading: false, data: newData});
   }
 
   render() {
+    if (this.state.loading) {
+      return <span>Loading...</span>;
+    }
     return <ComponentView id={this.props.id} type={this.props.type} data={this.state.data} />;
   }
 }
