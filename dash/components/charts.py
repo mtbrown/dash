@@ -46,18 +46,15 @@ class BarChart(Chart):
     def add_bar(self, label, value):
         self.labels.append(label)
         self.data.append(value)
-        self.emit(['add', [label, value]])
 
     def update_bar(self, label, value):
         data_index = self.labels.index(label)
         self.data[data_index] = value
-        self.emit(['update', [data_index, value]])
 
     def remove_bar(self, label):
         data_index = self.labels.index(label)
         self.labels.pop(data_index)
         self.data.pop(data_index)
-        self.emit(['remove', data_index])
 
 
 class LineChart(Chart):
@@ -73,7 +70,6 @@ class LineChart(Chart):
             self.data.pop(0)
         self.labels.append(label)
         self.data.append(value)
-        self.emit(['add', [label, value]])
 
     def add_point_time(self, time, value):
         self.add_point(time.isoformat(), value)

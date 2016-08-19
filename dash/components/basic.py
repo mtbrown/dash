@@ -23,12 +23,6 @@ class Text(Panel):
         self._text = text
         self.emit_state()
 
-    def render_html(self):
-        return render_template('text.html', id=self.id, text=self.text)
-
-    def render_js(self):
-        return render_template('text.js', id=self.id)
-
 
 class Table(Panel):
     def __init__(self, title=None, rows=None, headers=None, max_rows=0):
@@ -49,10 +43,3 @@ class Table(Panel):
             self.rows.pop()
         self.rows.insert(0, row)
         self.emit_state()
-
-    def render_html(self):
-        return render_template('table.html', id=self.id, headers=self.headers, rows=self.rows)
-
-    def render_js(self):
-        return render_template('table.js', id=self.id, max_rows=self.max_rows)
-

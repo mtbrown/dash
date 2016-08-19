@@ -39,14 +39,8 @@ def load_plugins():
         name, ext = os.path.splitext(file)
         mod = __import__(name)
         if hasattr(mod, "main"):
-            setup_plugin(name, mod.main)
+            Plugin(name, mod.main)
     sys.path.pop(0)
-
-
-def setup_plugin(fname, main):
-    new = Plugin(fname, main)
-    new.home_view = lambda: render_template('plugin/home.html', name=new.id, grid=new.grid)
-    new.log_view = lambda: render_template('plugin/log.html', name=new.id, grid=new.grid)
 
 
 class PluginScheduler(threading.Thread):

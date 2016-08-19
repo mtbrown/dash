@@ -30,9 +30,3 @@ def on_join(data):
 @socketio.on('leave', namespace='/api')
 def on_leave(data):
     leave_room(data['room'])
-
-
-@app.template_filter('quote')
-def quote(value):
-    """Wraps the value in quotes. Intended for template use."""
-    return '"{0}"'.format(value)

@@ -24,10 +24,6 @@ class Panel:
     def emit_state(self):
         socketio.emit(self.id, self.state, namespace='/api', room=self.id)
 
-    def emit(self, data):
-        """Emit a SocketIO message to each grid that this panel is currently contained in."""
-        pass
-
 
 def get_component_by_id(component_id):
     return component_id_map[component_id]
