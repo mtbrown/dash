@@ -1,14 +1,24 @@
-import json
-import enum
-from functools import wraps
 from flask_restful import Api, Resource
 from flask import Blueprint
+from flask_socketio import join_room, leave_room, send
 
+from . import socketio
 from .plugins import list_plugins, get_script_by_id
 from .components.panel import get_component_by_id
 
 
 api = Api(Blueprint('api', __name__))
+
+
+@socketio.on('join', namespace='/api')
+def on_join(data):
+    join_room(data['room'])
+    send("You have joined room {0}".format(data['room']))
+
+
+@socketio.on('leave', namespace='/api')
+def on_leave(data):
+    leave_room(data['room'])
 
 
 @api.resource('/scripts')
@@ -50,25 +60,3 @@ class Component(Resource):
         except ValueError:
             return {"error": "Invalid component ID: {0}".format(component_id)}, 400
         return component.state
-
-
-# @socket.on('connect', namespace='/api')
-def test_connect():
-    print("Connected successfully")
-
-
-# @socket.on('message', namespace='/api')
-def message_handler(message):
-    print("Received: " + str(message))
-
-    if type(message) is dict:
-        json_message = message
-    elif type(message) is str:
-        try:
-            json_message = json.loads(message)
-        except ValueError:
-            print("Error parsing json")
-            return
-    else:
-        print("Invalid message type")
-        return

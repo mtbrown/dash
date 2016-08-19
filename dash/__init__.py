@@ -19,14 +19,3 @@ app.register_blueprint(api.blueprint, url_prefix='/api')
 @app.route('/<path:path>')
 def catch_all(path):
     return app.send_static_file('index.html')
-
-
-@socketio.on('join', namespace='/api')
-def on_join(data):
-    join_room(data['room'])
-    send("You have joined room {0}".format(data['room']))
-
-
-@socketio.on('leave', namespace='/api')
-def on_leave(data):
-    leave_room(data['room'])
