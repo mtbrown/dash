@@ -43,3 +43,30 @@ class Table(Panel):
             self.rows.pop()
         self.rows.insert(0, row)
         self.emit_state()
+
+
+class Statistic(Panel):
+    def __init__(self, title=None, unit=None, description=None, icon=None):
+        super().__init__(title=title)
+        self._value = 0
+        self.unit = unit
+        self.description = description
+        self.icon = icon
+
+    @property
+    def state(self):
+        return {
+            "value": self.value,
+            "unit": self.unit,
+            "description": self.description,
+            "icon": self.icon
+        }
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
+        self.emit_state()

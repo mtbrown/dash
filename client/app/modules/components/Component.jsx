@@ -5,7 +5,8 @@ import { socket } from '../App.jsx';
 
 const componentMap = {
   Text: React.createFactory(require('./Text.jsx')),
-  Table: React.createFactory(require('./Table.jsx'))
+  Table: React.createFactory(require('./Table.jsx')),
+  Statistic: React.createFactory(require('./Statistic.jsx'))
 };
 
 
