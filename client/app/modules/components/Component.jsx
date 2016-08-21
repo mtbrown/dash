@@ -6,7 +6,9 @@ import { socket } from '../App.jsx';
 const componentMap = {
   Text: React.createFactory(require('./Text.jsx')),
   Table: React.createFactory(require('./Table.jsx')),
-  Statistic: React.createFactory(require('./Statistic.jsx'))
+  Statistic: React.createFactory(require('./Statistic.jsx')),
+  LineChart: React.createFactory(require('./Chart.jsx')),
+  BarChart: React.createFactory(require('./Chart.jsx'))
 };
 
 
@@ -46,6 +48,7 @@ class ComponentView extends React.Component {
   render() {
     return componentMap[this.props.type]({
       id: this.props.id,
+      type: this.props.type,
       data: this.props.data
     });
   }
