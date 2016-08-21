@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask_socketio import join_room, leave_room, send
 
 from . import socketio, script_manager
-from .components.panel import get_component_by_id
+from .components.component import get_component_by_id
 
 
 api = Api(Blueprint('api', __name__))

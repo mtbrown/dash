@@ -1,8 +1,8 @@
-from .panel import Panel
+from .component import Component
 from flask import render_template
 
 
-class Text(Panel):
+class Text(Component):
     def __init__(self, title=None, text=""):
         super().__init__(title=title)
         self._text = ""
@@ -24,7 +24,7 @@ class Text(Panel):
         self.emit_state()
 
 
-class Table(Panel):
+class Table(Component):
     def __init__(self, title=None, rows=None, headers=None, max_rows=0):
         super().__init__(title=title)
         self.headers = headers
@@ -45,7 +45,7 @@ class Table(Panel):
         self.emit_state()
 
 
-class Statistic(Panel):
+class Statistic(Component):
     def __init__(self, title=None, unit=None, description=None, icon=None):
         super().__init__(title=title)
         self._value = 0

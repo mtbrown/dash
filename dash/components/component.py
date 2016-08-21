@@ -5,7 +5,7 @@ from .. import socketio
 component_id_map = {}
 
 
-class Panel:
+class Component:
     __metaclass__ = abc.ABCMeta
 
     id_counter = 0
@@ -13,9 +13,9 @@ class Panel:
     def __init__(self, title=None):
         self.title = title
         self.containers = []  # grids that panel is currently contained in
-        self.id = Panel.id_counter
+        self.id = Component.id_counter
         component_id_map[str(self.id)] = self
-        Panel.id_counter += 1
+        Component.id_counter += 1
 
     @abc.abstractproperty
     def state(self):

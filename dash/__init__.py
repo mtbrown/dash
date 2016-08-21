@@ -1,5 +1,5 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, join_room, leave_room, send
+from flask import Flask
+from flask_socketio import SocketIO
 import eventlet
 import os
 

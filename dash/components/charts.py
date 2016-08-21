@@ -1,6 +1,6 @@
 import abc
 from enum import Enum
-from .panel import Panel
+from .component import Component
 from flask import render_template
 import datetime
 
@@ -13,7 +13,7 @@ class ChartScale(Enum):
     RadialLinear = "radialLinear"
 
 
-class Chart(Panel):
+class Chart(Component):
     __metaclass__ = abc.ABCMeta
 
     # Require that subclasses define chart_type property
