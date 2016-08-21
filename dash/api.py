@@ -2,8 +2,7 @@ from flask_restful import Api, Resource
 from flask import Blueprint
 from flask_socketio import join_room, leave_room, send
 
-from . import socketio
-from .plugins import list_plugins, get_script_by_id
+from . import socketio, script_manager
 from .components.panel import get_component_by_id
 
 
@@ -30,7 +29,7 @@ class Scripts(Resource):
             "title": script.title,
             "status": script.status.value,
             "label": str(script.label)
-        } for script in list_plugins()]
+        } for script in script_manager.script_list]
 
 
 @api.resource('/scripts/<script_id>/grid')
@@ -39,7 +38,7 @@ class ScriptGrid(Resource):
     def get(script_id):
         response = []
         try:
-            script = get_script_by_id(script_id)
+            script = script_manager.script_map[script_id]
         except ValueError:
             return {"error": "Invalid script ID: {0}".format(script_id)}, 400
 
