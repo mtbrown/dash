@@ -1,5 +1,5 @@
 import abc
-from .. import socketio
+#from .. import socketio
 
 
 component_id_map = {}
@@ -22,7 +22,8 @@ class Component:
         return {}
 
     def emit_state(self):
-        socketio.emit(self.id, self.state, namespace='/api', room=self.id)
+        pass
+        #socketio.emit(self.id, self.state, namespace='/api', room=self.id)
 
 
 def get_component_by_id(component_id):

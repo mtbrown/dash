@@ -1,85 +1,100 @@
-import logging
-import queue
+import inspect
+from bs4 import BeautifulSoup, Tag
 
-LOG_LINES = 50
-BOOTSTRAP_COLUMNS = 12  # Bootstrap grid system based on 12 columns
-
-
-class FixedQueueHandler(logging.Handler):
-    """
-    This handler sends logging records to a fixed-length queue. When the queue becomes full,
-    the oldest record is removed to make room for the newest record. The maximum size of the
-    queue is handled inside of the queue constructor rather than the handler.
-    """
-    def __init__(self, queue):
-        super(FixedQueueHandler, self).__init__()
-        self.queue = queue
-
-    def emit(self, record):
-        if self.queue.full():
-            self.queue.get_nowait()  # delete oldest record if full
-        self.queue.put_nowait(record)
+from . import components
 
 
 class Grid:
-    def __init__(self, name):
-        self.name = name  # name of plugin that owns grid
-        self._num_columns = 1  # number of columns the grid contains
-        self.column_size = BOOTSTRAP_COLUMNS  # the size of each column in Bootstrap column units
-        self.columns = [[]]  # list containing a list of panels for each column
-        self.panel_columns = {}  # maps panel ids to the column they're contained in
+    def __init__(self, layout):
+        self.layout = layout
+        self.children = []
 
-        # prepare logger
-        self.logger = logging.Logger(name)
-        self.logger_queue = queue.Queue(maxsize=LOG_LINES)
-        handler = FixedQueueHandler(self.logger_queue)
-        self.logger.addHandler(handler)
+        soup = BeautifulSoup(layout, 'html.parser')
+        if not soup.find('grid'):
+            raise ValueError("Invalid layout, missing Grid tag")
+        self.children = parse_layout(soup.grid)
 
     @property
-    def num_columns(self):
-        return self._num_columns
+    def state(self):
+        return [child.state for child in self.children]
 
-    @num_columns.setter
-    def num_columns(self, num_columns):
-        """
-        Sets the number of columns for the grid layout. The number of columns must divide evenly
-        into 12 (1, 2, 3, 4, 6, 12). If the number of columns becomes smaller than the old
-        value, the panels contained in the last columns will be removed.
-        """
-        if num_columns <= 0 or BOOTSTRAP_COLUMNS % num_columns != 0:
-            logging.error("Invalid columns value (%d) for grid %s. Value must be a factor of %d.",
-                          num_columns, self.name, BOOTSTRAP_COLUMNS)
-            return
 
-        while len(self.columns) < num_columns:
-            self.columns.append([])  # add an empty list for each new column
-        while len(self.columns) > num_columns:
-            for panel in self.columns[-1]:
-                panel.containers.remove(self)
-            self.columns.pop(-1)
-        self._num_columns = num_columns
-        self.column_size = BOOTSTRAP_COLUMNS / num_columns
+class Row:
+    def __init__(self):
+        self.children = []
 
-    def add(self, panel, column=0):
-        if column < 0 or column >= self._num_columns:
-            logging.error("Unable to add %s to grid %s, invalid column index %d.",
-                          panel.id, self.name, column)
-            return
-        if panel.id in self.panel_columns:
-            logging.info("Attempted to add duplicate %s to grid %s, ignoring.",
-                         panel.id, self.name)
-            return
+    @property
+    def state(self):
+        return {
+            'type': 'row',
+            'children': [child.state for child in self.children]
+        }
 
-        panel.containers.append(self)  # add self to panel's container list
-        self.panel_columns[panel.id] = column
-        self.columns[column].append(panel)
+    def add(self, col):
+        if not isinstance(col, Col):
+            raise ValueError("Only columns may be immediate children of rows")
+        self.children.append(col)
 
-    def remove(self, panel):
-        if panel.id not in self.panel_columns:
-            logging.info("Attempted to remove non-existent %s from grid %s, ignoring.",
-                         panel.id, self.name)
-            return
 
-        panel.containers.remove(self)
-        self.columns[self.panel_columns[panel.id]].remove(panel)
-        self.panel_columns.pop(panel.id)
+class Col:
+    def __init__(self, xs=None, sm=None, md=None, lg=None):
+        self.children = []
+        self.xs = xs
+        self.sm = sm
+        self.md = md
+        self.lg = lg
+
+    @property
+    def state(self):
+        return {
+            'type': 'col',
+            'xs': self.xs,
+            'sm': self.sm,
+            'md': self.md,
+            'lg': self.lg,
+            'children': [child.state for child in self.children]
+        }
+
+    def add(self, child):
+        self.children.append(child)
+
+
+class BaseComponent:
+    def __init__(self, id, type):
+        self.type = type
+        self.id = id
+
+    @property
+    def state(self):
+        return {
+            'type': self.type,
+            'id': self.id
+        }
+
+
+tag_map = {
+    'row': Row,
+    'col': Col
+}
+
+# BeautifulSoup converts all tags to lowercase due to parser limitations
+# Maps lowercase class names to properly capitalized names for each component
+base_tag_map = {m[0].lower(): m[0] for m in inspect.getmembers(components, inspect.isclass)}
+
+
+def parse_layout(tag):
+    if not isinstance(tag, Tag):
+        raise ValueError("Expected a Tag instance")
+    tag_children = tag.find_all(True, recursive=False)  # find all children, skipping NavigableStrings
+
+    if tag.name == 'grid':
+        return list(map(parse_layout, tag_children))
+    if tag.name in base_tag_map:
+        return BaseComponent(id=tag.attrs['id'], type=base_tag_map[tag.name])
+    if tag.name not in tag_map:
+        raise ValueError("Invalid layout tag: {0}".format(tag.name))
+
+    new = tag_map[tag.name]()
+    for child in tag_children:
+        new.add(parse_layout(child))  # recursively parse child tags
+    return new

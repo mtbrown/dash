@@ -42,12 +42,7 @@ class ScriptGrid(Resource):
         except ValueError:
             return {"error": "Invalid script ID: {0}".format(script_id)}, 400
 
-        for column in script.grid.columns:
-            response.append([{
-                "id": component.id,
-                "type": component.__class__.__name__
-            } for component in column])
-        return {"columns": response}
+        return {"grid": script.grid.state}
 
 
 @api.resource('/components/<component_id>')
