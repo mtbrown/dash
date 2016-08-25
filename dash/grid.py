@@ -94,7 +94,16 @@ def parse_layout(tag):
     if tag.name not in tag_map:
         raise ValueError("Invalid layout tag: {0}".format(tag.name))
 
-    new = tag_map[tag.name]()
+    # Search tag attributes for valid parameters to pass to constructor
+    valid_params = list(inspect.signature(tag_map[tag.name].__init__).parameters)
+    valid_params.remove('self')
+    kwargs = {}
+    for attr in tag.attrs:
+        if attr in valid_params:
+            kwargs[attr] = tag.attrs[attr]
+    parsed = tag_map[tag.name](**kwargs)
+
+    # Recursively parse child tags
     for child in tag_children:
-        new.add(parse_layout(child))  # recursively parse child tags
-    return new
+        parsed.add(parse_layout(child))
+    return parsed
