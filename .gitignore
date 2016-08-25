@@ -1,5 +1,5 @@
-# Individual plugins should be in their own repo
-plugins/
+# Individual scripts should be in their own repo
+scripts/
 
 client/node_modules/
 client/public/
