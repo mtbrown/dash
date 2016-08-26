@@ -4,8 +4,9 @@ import sys
 import threading
 import time
 import enum
+from bs4 import BeautifulSoup
 
-from .grid import Grid
+from .grid import parse_layout
 from .panel import Panel
 
 
@@ -61,8 +62,9 @@ class ScriptManager(threading.Thread):
         if not hasattr(mod, "main"):
             return
 
-        layout = open(layout_file).read()
-        grid = Grid(layout)
+        layout_string = open(layout_file).read()
+        layout = BeautifulSoup(layout_string, 'html.parser')
+        grid, component_list = parse_layout(layout.grid)
 
         script = Script(name, mod.main, grid)
         self.script_list.append(script)

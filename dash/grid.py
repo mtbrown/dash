@@ -5,18 +5,15 @@ from . import components
 
 
 class Grid:
-    def __init__(self, layout):
-        self.layout = layout
+    def __init__(self):
         self.children = []
-
-        soup = BeautifulSoup(layout, 'html.parser')
-        if not soup.find('grid'):
-            raise ValueError("Invalid layout, missing Grid tag")
-        self.children = parse_layout(soup.grid)
 
     @property
     def state(self):
         return [child.state for child in self.children]
+
+    def add(self, child):
+        self.children.append(child)
 
 
 class Row:
@@ -58,9 +55,10 @@ class Col:
 
 
 class BaseComponent:
-    def __init__(self, id, type):
+    def __init__(self, id, type, ref):
         self.type = type
         self.id = id
+        self.ref = ref
 
     @property
     def state(self):
@@ -71,6 +69,7 @@ class BaseComponent:
 
 
 tag_map = {
+    'grid': Grid,
     'row': Row,
     'col': Col
 }
@@ -78,30 +77,45 @@ tag_map = {
 # BeautifulSoup converts all tags to lowercase due to parser limitations
 # Maps lowercase class names to properly capitalized names for each component
 base_tag_map = {m[0].lower(): m[0] for m in inspect.getmembers(components, inspect.isclass)}
+base_tag_class_map = {m[0].lower(): m[1] for m in inspect.getmembers(components, inspect.isclass)}
 
 
 def parse_layout(tag):
-    if not isinstance(tag, Tag):
-        raise ValueError("Expected a Tag instance")
-    tag_children = tag.find_all(True, recursive=False)  # find all children, skipping NavigableStrings
-
-    if tag.name == 'grid':
-        return list(map(parse_layout, tag_children))
+    """
+    Recursively traverses the layout tree and generates a Grid containing Row, Col, and
+    BaseComponent instances. When a base component is reached, the corresponding component
+    class is instantiated and added to a component list which is also returned.
+    :param tag: The root BeautifulSoup tag of the layout tree.
+    :return: A tuple containing the generated grid and a list of components instantiated
+    """
     if tag.name in base_tag_map:
-        return BaseComponent(id=tag.attrs['id'], type=base_tag_map[tag.name])
-    if tag.name not in tag_map:
+        component = construct_with_attrs(base_tag_class_map[tag.name], tag.attrs)
+        return BaseComponent(id=tag.attrs['id'], type=base_tag_map[tag.name], ref=component), [component]
+    elif tag.name in tag_map:
+        parsed = construct_with_attrs(tag_map[tag.name], tag.attrs)
+        # Recursively parse child tags, merged returned component lists into master list
+        component_list = []
+        for child in tag.find_all(True, recursive=False):  # find all direct child tags, ignoring NavigableStrings
+            result, sub_list = parse_layout(child)
+            parsed.add(result)
+            component_list.extend(sub_list)
+        return parsed, component_list
+    else:
         raise ValueError("Invalid layout tag: {0}".format(tag.name))
 
-    # Search tag attributes for valid parameters to pass to constructor
-    valid_params = list(inspect.signature(tag_map[tag.name].__init__).parameters)
+
+def construct_with_attrs(cls, attrs):
+    """
+    Constructs an instance of a class using an attributes dictionary to fill
+    valid constructor parameters.
+    :param cls: A class definition
+    :param attrs: A dictionary mapping parameter strings to values
+    :return: The instantiated object
+    """
+    valid_params = list(inspect.signature(cls.__init__).parameters)
     valid_params.remove('self')
     kwargs = {}
-    for attr in tag.attrs:
+    for attr in attrs:
         if attr in valid_params:
-            kwargs[attr] = tag.attrs[attr]
-    parsed = tag_map[tag.name](**kwargs)
-
-    # Recursively parse child tags
-    for child in tag_children:
-        parsed.add(parse_layout(child))
-    return parsed
+            kwargs[attr] = attrs[attr]
+    return cls(**kwargs)
