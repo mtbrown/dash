@@ -49,12 +49,8 @@ class Col:
         return {
             'type': 'Col',
             'children': [child.state for child in self.children],
-            'props': {
-                'xs': self.xs,
-                'sm': self.sm,
-                'md': self.md,
-                'lg': self.lg,
-            }
+            'props': {key: val for (key, val) in self.__dict__.items() if val is not None
+                      and key not in ['children']}
         }
 
     def add(self, child):
