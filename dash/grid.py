@@ -26,7 +26,7 @@ class Row:
     @property
     def state(self):
         return {
-            'type': 'row',
+            'type': 'Row',
             'children': [child.state for child in self.children]
         }
 
@@ -47,12 +47,14 @@ class Col:
     @property
     def state(self):
         return {
-            'type': 'col',
-            'xs': self.xs,
-            'sm': self.sm,
-            'md': self.md,
-            'lg': self.lg,
-            'children': [child.state for child in self.children]
+            'type': 'Col',
+            'children': [child.state for child in self.children],
+            'props': {
+                'xs': self.xs,
+                'sm': self.sm,
+                'md': self.md,
+                'lg': self.lg,
+            }
         }
 
     def add(self, child):

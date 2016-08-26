@@ -1,14 +1,15 @@
 import React from 'react';
-import { Grid, Row, Col, Panel } from 'react-bootstrap';
+
 
 import { Content } from './Content.jsx';
-import { Component } from '../components/Component.jsx';
+import { Grid } from './Grid.jsx';
+
 import { get } from '../utils/api.js';
 
 export class Script extends React.Component {
   constructor() {
     super();
-    this.state = {grid: {columns: []}};
+    this.state = {grid: []};
     this.fetchGrid = this.fetchGrid.bind(this);
   }
 
@@ -17,8 +18,7 @@ export class Script extends React.Component {
       return;
     }
     const response = await get(`/api/scripts/${this.props.params.scriptId}/grid`);
-    this.setState({grid: response});
-    console.log("grid: " + response)
+    this.setState({grid: response.grid});
   }
 
   componentDidMount() {
@@ -38,39 +38,8 @@ export class Script extends React.Component {
   render() {
     return (
       <Content title="Script">
-        <ScriptView grid={this.state.grid} />
+        <Grid grid={this.state.grid} />
       </Content>
     );
-  }
-}
-
-
-class ScriptView extends React.Component {
-  render() {
-    const columnSize = 12 / this.props.grid.columns.length;
-
-    const scriptComponents = this.props.grid.columns.map((column, i) => {
-      return (
-        <Col md={columnSize} key={i}>
-          <Col md={12} key={i}>
-            {column.map((component) => {
-              return (
-                <Row key={component.id}>
-                  <Component id={component.id} type={component.type} key={component.id} />
-                </Row>
-              );
-            })}
-          </Col>
-        </Col>
-      );
-    });
-
-    return (
-      <Grid fluid={true}>
-        <Row>
-          {scriptComponents}
-        </Row>
-      </Grid>
-    )
   }
 }
