@@ -1,6 +1,9 @@
 import inspect
+from bs4 import Tag
+from typing import Dict, Any, Union
 
 from . import components
+from .components.component import Component
 
 
 class Grid:
@@ -11,7 +14,7 @@ class Grid:
     def state(self):
         return [child.state for child in self.children]
 
-    def add(self, child):
+    def add(self, child: Union['Row', 'Col']):
         self.children.append(child)
 
 
@@ -26,14 +29,12 @@ class Row:
             'children': [child.state for child in self.children]
         }
 
-    def add(self, col):
-        if not isinstance(col, Col):
-            raise ValueError("Only columns may be immediate children of rows")
+    def add(self, col: 'Col'):
         self.children.append(col)
 
 
 class Col:
-    def __init__(self, xs=None, sm=None, md=None, lg=None):
+    def __init__(self, xs: int = None, sm: int = None, md: int = None, lg: int = None):
         self.children = []
         self.xs = xs
         self.sm = sm
@@ -49,12 +50,12 @@ class Col:
                       and key not in ['children']}
         }
 
-    def add(self, child):
+    def add(self, child: Union['Row', 'Col']):
         self.children.append(child)
 
 
 class BaseComponent:
-    def __init__(self, id, type, ref):
+    def __init__(self, id: str, type: str, ref: Component):
         self.type = type
         self.id = id
         self.ref = ref
@@ -79,7 +80,7 @@ base_tag_map = {m[0].lower(): m[0] for m in inspect.getmembers(components, inspe
 base_tag_class_map = {m[0].lower(): m[1] for m in inspect.getmembers(components, inspect.isclass)}
 
 
-def parse_layout(tag):
+def parse_layout(tag: Tag) -> Grid:
     """
     Recursively traverses the layout tree and generates a Grid containing Row, Col, and
     BaseComponent instances. When a base component is reached, the corresponding component
@@ -103,7 +104,7 @@ def parse_layout(tag):
         raise ValueError("Invalid layout tag: {0}".format(tag.name))
 
 
-def construct_with_attrs(cls, attrs):
+def construct_with_attrs(cls, attrs: Dict[str, Any]):
     """
     Constructs an instance of a class using an attributes dictionary to fill
     valid constructor parameters.
