@@ -1,6 +1,6 @@
 import inspect
 from bs4 import Tag
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 
 from . import components
 from .components.component import Component
@@ -49,7 +49,7 @@ class Col:
         return {
             'type': 'Col',
             'children': [child.state for child in self.children],
-            'props': {key: int(val) for (key, val) in self.__dict__.items() if val is not None
+            'props': {key: val for (key, val) in self.__dict__.items() if val is not None
                       and key not in ['children']}
         }
 
@@ -115,10 +115,23 @@ def construct_with_attrs(cls, attrs: Dict[str, Any]):
     :param attrs: A dictionary mapping parameter strings to values
     :return: The instantiated object
     """
-    valid_params = list(inspect.signature(cls.__init__).parameters)
+    # All attribute values will be strings from the parser
+    # This dictionary maps types to functions that convert strings to that type
+    converters = {
+        int: int,
+        str: str,
+        List: lambda s: s[1:-1].split(', '),
+        inspect.Parameter.empty: lambda s: s  # if no type specified, leave string untouched
+    }
+
+    params = inspect.signature(cls.__init__).parameters
+    valid_params = list(params.keys())
     valid_params.remove('self')
+
     kwargs = {}
     for attr in attrs:
-        if attr in valid_params:
-            kwargs[attr] = attrs[attr]
+        if attr not in valid_params:
+            continue
+        param_type = params[attr].annotation
+        kwargs[attr] = converters[param_type](attrs[attr])  # convert value and add to argument dictionary
     return cls(**kwargs)
