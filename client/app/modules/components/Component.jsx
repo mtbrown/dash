@@ -20,7 +20,7 @@ export class Component extends React.Component {
   }
 
   async componentDidMount() {
-    const response = await get(`/api/components/${this.props.id}`);
+    const response = await get(`/api/scripts/${this.props.script_id}/components/${this.props.id}`);
     this.dataHandler(response);
     socket.on(this.props.id, this.dataHandler);
     socket.emit('join', {room: this.props.id});

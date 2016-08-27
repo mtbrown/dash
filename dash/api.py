@@ -44,13 +44,13 @@ class ScriptGrid(Resource):
         return {"grid": script.grid.state}
 
 
-@api.resource('/components/<component_id>')
+@api.resource('/scripts/<script_id>/components/<component_id>')
 class Component(Resource):
     @staticmethod
-    def get(component_id):
+    def get(script_id, component_id):
         try:
-            pass
-            #component = get_component_by_id(component_id)
+            script = script_manager.script_map[script_id]
+            component = script.components[component_id]
         except ValueError:
             return {"error": "Invalid component ID: {0}".format(component_id)}, 400
-        #return component.state
+        return component.state

@@ -38,7 +38,7 @@ export class Script extends React.Component {
   render() {
     return (
       <Content title="Script">
-        <Grid grid={this.state.grid} />
+        <Grid grid={this.state.grid} script_id={this.props.params.scriptId} />
       </Content>
     );
   }

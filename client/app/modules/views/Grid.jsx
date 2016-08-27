@@ -18,7 +18,12 @@ export class Grid extends React.Component {
     if (element.type != "Row" && element.type != "Col") {
       console.log(element);
       console.log(`Component: type=${element.type}, id=${element.id}`);
-      return <Component id={element.id} type={element.type} key={element.id} />;
+      return <Component
+        id={element.id}
+        type={element.type}
+        script_id={this.props.script_id}
+        key={element.id}
+      />;
     }
 
     const children = element.children.map(this.renderRecursive);
