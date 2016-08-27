@@ -41,7 +41,7 @@ class ScriptGrid(Resource):
         except ValueError:
             return {"error": "Invalid script ID: {0}".format(script_id)}, 400
 
-        return {"grid": script.grid.state}
+        return script.grid.state
 
 
 @api.resource('/scripts/<script_id>/components/<component_id>')

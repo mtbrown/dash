@@ -9,7 +9,7 @@ import { get } from '../utils/api.js';
 export class Script extends React.Component {
   constructor() {
     super();
-    this.state = {grid: []};
+    this.state = {loading: true, grid: {}};
     this.fetchGrid = this.fetchGrid.bind(this);
   }
 
@@ -18,7 +18,7 @@ export class Script extends React.Component {
       return;
     }
     const response = await get(`/api/scripts/${this.props.params.scriptId}/grid`);
-    this.setState({grid: response.grid});
+    this.setState({loading: false, grid: response});
   }
 
   componentDidMount() {
@@ -36,9 +36,16 @@ export class Script extends React.Component {
   }
 
   render() {
+    var content;
+    if (this.state.loading) {
+      content = <span>Loading...</span>;
+    } else {
+      content = <Grid grid={this.state.grid} script_id={this.props.params.scriptId} />;
+    }
+
     return (
       <Content title="Script">
-        <Grid grid={this.state.grid} script_id={this.props.params.scriptId} />
+        {content}
       </Content>
     );
   }

@@ -11,11 +11,8 @@ export class Grid extends React.Component {
     this.renderRecursive = this.renderRecursive.bind(this);
   }
 
-  renderRecursive(element) {
-    if (element instanceof Array) {
-      return element.map(this.renderRecursive);
-    }
-    if (element.type != "Row" && element.type != "Col") {
+  renderRecursive(element, index) {
+    if (element.type != "Row" && element.type != "Col" && element.type != "Grid") {
       console.log(element);
       console.log(`Component: type=${element.type}, id=${element.id}`);
       return <Component
@@ -27,22 +24,21 @@ export class Grid extends React.Component {
     }
 
     const children = element.children.map(this.renderRecursive);
+    if (element.type == 'Grid') {
+      return <BootstrapGrid>{children}</BootstrapGrid>;
+    }
     if (element.type == 'Row') {
-      return <Row>{children}</Row>;
+      return <Row key={index}>{children}</Row>;
     }
     if (element.type == 'Col') {
-      element.props.children = element.children;
-      return React.createFactory(Col)(element.props);
+      const props = element.props;
+      props.key = index;
+      props.children = children;
+      return React.createFactory(Col)(props);
     }
   }
 
   render() {
-    const children = this.renderRecursive(this.props.grid);
-
-    return (
-      <BootstrapGrid fluid={true}>
-        {children}
-      </BootstrapGrid>
-    );
+    return this.renderRecursive(this.props.grid, 0);
   }
 }

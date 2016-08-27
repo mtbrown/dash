@@ -12,7 +12,10 @@ class Grid:
 
     @property
     def state(self):
-        return [child.state for child in self.children]
+        return {
+            'type': 'Grid',
+            'children': [child.state for child in self.children]
+        }
 
     def add(self, child: Union['Row', 'Col']):
         self.children.append(child)
@@ -46,7 +49,7 @@ class Col:
         return {
             'type': 'Col',
             'children': [child.state for child in self.children],
-            'props': {key: val for (key, val) in self.__dict__.items() if val is not None
+            'props': {key: int(val) for (key, val) in self.__dict__.items() if val is not None
                       and key not in ['children']}
         }
 
