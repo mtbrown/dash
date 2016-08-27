@@ -3,10 +3,6 @@ from flask_socketio import SocketIO
 import eventlet
 import os
 
-from .scripts import ScriptManager
-
-scripts_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "scripts"))  # ../scripts
-
 # monkey patching is required because background threads are used
 eventlet.monkey_patch()
 
@@ -15,6 +11,9 @@ socketio = SocketIO()
 app = Flask(__name__, static_url_path='', static_folder='../client/public')
 app.config['SECRET_KEY'] = 'secret!'
 app.debug = True
+
+from .scripts import ScriptManager
+scripts_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "scripts"))  # ../scripts
 
 # start a separate thread to monitor the status of running scripts
 script_manager = ScriptManager(scripts_path)

@@ -1,5 +1,5 @@
 import abc
-#from .. import socketio
+from .. import socketio
 
 
 class Component:
@@ -15,5 +15,4 @@ class Component:
         return {}
 
     def emit_state(self):
-        pass
-        #socketio.emit(self.id, self.state, namespace='/api', room=self.id)
+        socketio.emit(self.id, self.state, namespace='/api', room=self.id)
