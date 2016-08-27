@@ -7,14 +7,11 @@ import { Grid as BootstrapGrid, Row, Col } from 'react-bootstrap';
 export class Grid extends React.Component {
   constructor() {
     super();
-
     this.renderRecursive = this.renderRecursive.bind(this);
   }
 
   renderRecursive(element, index) {
     if (element.type != "Row" && element.type != "Col" && element.type != "Grid") {
-      console.log(element);
-      console.log(`Component: type=${element.type}, id=${element.id}`);
       return <Component
         id={element.id}
         type={element.type}
@@ -25,7 +22,7 @@ export class Grid extends React.Component {
 
     const children = element.children.map(this.renderRecursive);
     if (element.type == 'Grid') {
-      return <BootstrapGrid>{children}</BootstrapGrid>;
+      return <BootstrapGrid fluid={true}>{children}</BootstrapGrid>;
     }
     if (element.type == 'Row') {
       return <Row key={index}>{children}</Row>;
