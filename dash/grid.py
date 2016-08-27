@@ -1,5 +1,4 @@
 import inspect
-from bs4 import BeautifulSoup, Tag
 
 from . import components
 

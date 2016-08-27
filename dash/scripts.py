@@ -17,14 +17,16 @@ class ScriptStatus(enum.Enum):
 
 
 class Script:
-    def __init__(self, id, main, grid):
+    def __init__(self, id, main, grid, component_list):
         self.id = id  # name of module/package containing script
-        self.title = id
-        self.status = ScriptStatus.Ok
-        self.label = 0
         self.main = main
         self.grid = grid
-        self.panel = Panel(id, self.grid, [])
+        self.components = {comp.id: comp for comp in component_list}
+
+        self.title = id  # title displayed
+        self.status = ScriptStatus.Ok
+        self.label = 0
+        self.panel = Panel(self.id, self.grid, self.components)
         self.thread = None
 
 
@@ -66,7 +68,7 @@ class ScriptManager(threading.Thread):
         layout = BeautifulSoup(layout_string, 'html.parser')
         grid, component_list = parse_layout(layout.grid)
 
-        script = Script(name, mod.main, grid)
+        script = Script(name, mod.main, grid, component_list)
         self.script_list.append(script)
         self.script_map[script.id] = script
 
