@@ -1,9 +1,10 @@
+from typing import List
+
 from .component import Component
-from flask import render_template
 
 
 class Text(Component):
-    def __init__(self, id, title=None, text=""):
+    def __init__(self, id: str, title: str = None, text: str = ""):
         super().__init__(id, title=title)
         self._text = ""
         self.text = text
@@ -25,7 +26,8 @@ class Text(Component):
 
 
 class Table(Component):
-    def __init__(self, id, title=None, rows=None, headers=None, max_rows=0):
+    def __init__(self, id: str, title: str = None, rows: List[str] = None,
+                 headers: List[str] = None, max_rows: int = 0):
         super().__init__(id, title=title)
         self.headers = headers
         self.rows = list(rows) if rows is not None else []
@@ -46,7 +48,8 @@ class Table(Component):
 
 
 class Statistic(Component):
-    def __init__(self, id, title=None, unit=None, description=None, icon=None):
+    def __init__(self, id: str, title: str = None, unit: str = None,
+                 description: str = None, icon: str = None):
         super().__init__(id, title=title)
         self._value = 0
         self.unit = unit

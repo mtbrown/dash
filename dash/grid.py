@@ -121,6 +121,7 @@ def construct_with_attrs(cls, attrs: Dict[str, Any]):
         int: int,
         str: str,
         List: lambda s: s[1:-1].split(', '),
+        Any: lambda s: s,
         inspect.Parameter.empty: lambda s: s  # if no type specified, leave string untouched
     }
 

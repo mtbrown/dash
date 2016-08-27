@@ -5,7 +5,7 @@ from .. import socketio
 class Component:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, id, title=None):
+    def __init__(self, id: str, title: str = None):
         self.title = title
         self.containers = []  # grids that panel is currently contained in
         self.id = id
