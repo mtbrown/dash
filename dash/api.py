@@ -3,7 +3,6 @@ from flask import Blueprint
 from flask_socketio import join_room, leave_room, send
 
 from . import socketio, script_manager
-from .components.component import get_component_by_id
 
 
 api = Api(Blueprint('api', __name__))
@@ -50,7 +49,8 @@ class Component(Resource):
     @staticmethod
     def get(component_id):
         try:
-            component = get_component_by_id(component_id)
+            pass
+            #component = get_component_by_id(component_id)
         except ValueError:
             return {"error": "Invalid component ID: {0}".format(component_id)}, 400
-        return component.state
+        #return component.state

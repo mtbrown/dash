@@ -3,8 +3,8 @@ from flask import render_template
 
 
 class Text(Component):
-    def __init__(self, title=None, text=""):
-        super().__init__(title=title)
+    def __init__(self, id, title=None, text=""):
+        super().__init__(id, title=title)
         self._text = ""
         self.text = text
 
@@ -25,8 +25,8 @@ class Text(Component):
 
 
 class Table(Component):
-    def __init__(self, title=None, rows=None, headers=None, max_rows=0):
-        super().__init__(title=title)
+    def __init__(self, id, title=None, rows=None, headers=None, max_rows=0):
+        super().__init__(id, title=title)
         self.headers = headers
         self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows
@@ -46,8 +46,8 @@ class Table(Component):
 
 
 class Statistic(Component):
-    def __init__(self, title=None, unit=None, description=None, icon=None):
-        super().__init__(title=title)
+    def __init__(self, id, title=None, unit=None, description=None, icon=None):
+        super().__init__(id, title=title)
         self._value = 0
         self.unit = unit
         self.description = description

@@ -22,8 +22,8 @@ class Chart(Component):
         print("Chart class should never be instantiated, only extended")
         raise NotImplementedError
 
-    def __init__(self, title=None, min_y=None, max_y=None, description=None):
-        super().__init__(title=title)
+    def __init__(self, id, title=None, min_y=None, max_y=None, description=None):
+        super().__init__(id, title=title)
         self.labels = []
         self.data = []
         self.x_scale = ChartScale.Category
@@ -98,8 +98,8 @@ class BarChart(Chart):
 class LineChart(Chart):
     chart_type = 'line'
 
-    def __init__(self, title=None, min_y=None, max_y=None, description=None, max_points=0):
-        super().__init__(title, min_y, max_y, description)
+    def __init__(self, id, title=None, min_y=None, max_y=None, description=None, max_points=0):
+        super().__init__(id, title, min_y, max_y, description)
         self.max_points = max_points
 
     def add_point(self, label, value):
