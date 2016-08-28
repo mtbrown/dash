@@ -1,6 +1,6 @@
 import inspect
-from bs4 import Tag
-from typing import Dict, Any, Union, List
+from bs4 import BeautifulSoup, Tag
+from typing import Dict, Any, Union, List, Tuple
 
 from . import components
 from .components.component import Component
@@ -83,7 +83,19 @@ base_tag_map = {m[0].lower(): m[0] for m in inspect.getmembers(components, inspe
 base_tag_class_map = {m[0].lower(): m[1] for m in inspect.getmembers(components, inspect.isclass)}
 
 
-def parse_layout(tag: Tag) -> Grid:
+def create_grid(layout_file) -> Tuple[Grid, List[Component]]:
+    """
+    Creates a Grid instance from the provided layout file. The components specified
+    in the layout file are also instantiated and returned as a list of components.
+    :param layout_file: The file containing the layout
+    :return: A tuple containing the generated grid and a list of components instantiated
+    """
+    layout_string = open(layout_file).read()
+    layout = BeautifulSoup(layout_string, 'html.parser')
+    return parse_layout(layout.grid)
+
+
+def parse_layout(tag: Tag) -> Tuple[Grid, List[Component]]:
     """
     Recursively traverses the layout tree and generates a Grid containing Row, Col, and
     BaseComponent instances. When a base component is reached, the corresponding component
@@ -107,10 +119,10 @@ def parse_layout(tag: Tag) -> Grid:
         raise ValueError("Invalid layout tag: {0}".format(tag.name))
 
 
-def construct_with_attrs(cls, attrs: Dict[str, Any]):
+def construct_with_attrs(cls, attrs: Dict[str, str]):
     """
     Constructs an instance of a class using an attributes dictionary to fill
-    valid constructor parameters.
+    valid constructor key-word parameters.
     :param cls: A class definition
     :param attrs: A dictionary mapping parameter strings to values
     :return: The instantiated object
@@ -127,7 +139,7 @@ def construct_with_attrs(cls, attrs: Dict[str, Any]):
 
     params = inspect.signature(cls.__init__).parameters
     valid_params = list(params.keys())
-    valid_params.remove('self')
+    valid_params.remove('self')  # don't attempt to fill 'self' parameter
 
     kwargs = {}
     for attr in attrs:
