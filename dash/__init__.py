@@ -3,6 +3,8 @@ from flask_socketio import SocketIO
 import eventlet
 import os
 
+from . import hooks
+
 # monkey patching is required because background threads are used
 eventlet.monkey_patch()
 

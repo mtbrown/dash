@@ -5,9 +5,14 @@ import threading
 import time
 import enum
 from bs4 import BeautifulSoup
+import inspect
+import pkgutil
+from types import ModuleType
+from typing import List
 
-from .grid import parse_layout
+from .grid import create_grid
 from .panel import Panel
+from .hooks import HookEvent, ScriptHook
 
 
 class ScriptStatus(enum.Enum):
@@ -17,9 +22,8 @@ class ScriptStatus(enum.Enum):
 
 
 class Script:
-    def __init__(self, id, main, grid, component_list):
+    def __init__(self, id, grid, component_list, hooks):
         self.id = id  # name of module/package containing script
-        self.main = main
         self.grid = grid
         self.components = {comp.id: comp for comp in component_list}
 
@@ -28,6 +32,7 @@ class Script:
         self.label = 0
         self.panel = Panel(self.id, self.grid, self.components)
         self.thread = None
+        self.hooks = {event: [] for event in HookEvent}
 
 
 class ScriptManager(threading.Thread):
@@ -46,38 +51,29 @@ class ScriptManager(threading.Thread):
         return self._stop.is_set()
 
     def run(self):
-        for file in os.listdir(self.scripts_path):
-            self.start_script(file)
+        self.load_scripts()
         while not self._stop.is_set():
-            self.verify_scripts()
             time.sleep(10)
         logging.info("ScriptManager is stopping")
 
-    def start_script(self, filename):
-        name, ext = os.path.splitext(filename)
-        layout_file = os.path.join(self.scripts_path, name, 'layout.html')
+    def load_scripts(self):
+        for name in os.listdir(self.scripts_path):
+            script_path = os.path.join(self.scripts_path, name)
+            layout_file = os.path.join(script_path, 'layout.html')
+            hooks = []
+            for importer, modname, ispkg in pkgutil.walk_packages(path=[script_path], onerror=lambda x: None):
+                module = importer.find_module(modname).load_module(modname)
+                hooks.extend((load_hooks(module)))
+            if hooks:
+                grid, component_list = create_grid(layout_file)
+                script = Script(name, grid, component_list, hooks)
+                self.script_list.append(script)
+                self.script_map[script.id] = script
 
-        sys.path.insert(0, self.scripts_path)
-        mod = __import__(name)
-        sys.path.pop(0)
 
-        if not hasattr(mod, "main"):
-            return
-
-        layout_string = open(layout_file).read()
-        layout = BeautifulSoup(layout_string, 'html.parser')
-        grid, component_list = parse_layout(layout.grid)
-
-        script = Script(name, mod.main, grid, component_list)
-        self.script_list.append(script)
-        self.script_map[script.id] = script
-
-    def verify_scripts(self):
-        logging.info("Checking status of script threads")
-        for script in self.script_list:
-            if not script.thread:
-                logging.info("Creating new thread: {0}".format(script.id))
-                script.thread = threading.Thread(target=script.main, args=(script.panel,))
-            if not script.thread.is_alive():
-                logging.info("Starting thread: {0}".format(script.id))
-                script.thread.start()
+def load_hooks(module: ModuleType) -> List[ScriptHook]:
+    hooks = []
+    for name, member in inspect.getmembers(module):
+        if isinstance(member, ScriptHook):
+            hooks.append(member)
+    return hooks
