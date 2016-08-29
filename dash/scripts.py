@@ -63,7 +63,7 @@ class ScriptManager(threading.Thread):
             hooks = load_hooks(script_path)
             if not hooks:
                 continue  # skip directory/file if no hooks were found
-            grid, component_list = parse_layout(layout_file)
+            grid, component_list = parse_layout(open(layout_file).read())
             script = Script(name, grid, component_list, hooks)
             self.script_list.append(script)
             self.script_map[script.id] = script

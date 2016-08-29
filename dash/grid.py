@@ -85,16 +85,15 @@ base_tag_map = {m[0].lower(): m[0] for m in inspect.getmembers(components, inspe
 base_tag_class_map = {m[0].lower(): m[1] for m in inspect.getmembers(components, inspect.isclass)}
 
 
-def parse_layout(layout_file) -> Tuple[Grid, List[Component]]:
+def parse_layout(layout) -> Tuple[Grid, List[Component]]:
     """
     Parses the provided layout file and generates the corresponding Grid and list of
     Components.
-    :param layout_file: The file containing the layout
+    :param layout: A string containing a layout definition
     :return: A tuple containing the generated grid and a list of components instantiated
     """
-    layout_string = open(layout_file).read()
-    layout = BeautifulSoup(layout_string, 'html.parser')
-    return create_grid_and_components(layout.grid)
+    layout_tree = BeautifulSoup(layout, 'html.parser')
+    return create_grid_and_components(layout_tree.grid)
 
 
 def create_grid_and_components(tag: Tag) -> Tuple[Grid, List[Component]]:
