@@ -5,7 +5,7 @@ import time
 import enum
 from typing import List
 
-from .grid import Grid, create_grid
+from .grid import Grid, parse_layout
 from .panel import Panel
 from .hooks import ScriptHook, HookEvent, load_hooks
 from .components.component import Component
@@ -63,7 +63,7 @@ class ScriptManager(threading.Thread):
             hooks = load_hooks(script_path)
             if not hooks:
                 continue  # skip directory/file if no hooks were found
-            grid, component_list = create_grid(layout_file)
+            grid, component_list = parse_layout(layout_file)
             script = Script(name, grid, component_list, hooks)
             self.script_list.append(script)
             self.script_map[script.id] = script

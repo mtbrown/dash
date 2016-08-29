@@ -33,6 +33,8 @@ class Row:
         }
 
     def add(self, col: 'Col'):
+        if not isinstance(col, Col):
+            raise ValueError("Only Col objects can be added to a row")
         self.children.append(col)
 
 
@@ -83,21 +85,21 @@ base_tag_map = {m[0].lower(): m[0] for m in inspect.getmembers(components, inspe
 base_tag_class_map = {m[0].lower(): m[1] for m in inspect.getmembers(components, inspect.isclass)}
 
 
-def create_grid(layout_file) -> Tuple[Grid, List[Component]]:
+def parse_layout(layout_file) -> Tuple[Grid, List[Component]]:
     """
-    Creates a Grid instance from the provided layout file. The components specified
-    in the layout file are also instantiated and returned as a list of components.
+    Parses the provided layout file and generates the corresponding Grid and list of
+    Components.
     :param layout_file: The file containing the layout
     :return: A tuple containing the generated grid and a list of components instantiated
     """
     layout_string = open(layout_file).read()
     layout = BeautifulSoup(layout_string, 'html.parser')
-    return parse_layout(layout.grid)
+    return create_grid_and_components(layout.grid)
 
 
-def parse_layout(tag: Tag) -> Tuple[Grid, List[Component]]:
+def create_grid_and_components(tag: Tag) -> Tuple[Grid, List[Component]]:
     """
-    Recursively traverses the layout tree and generates a Grid containing Row, Col, and
+    Recursively traverses the layout tree and generates a Grid tree containing Row, Col, and
     BaseComponent instances. When a base component is reached, the corresponding component
     class is instantiated and added to a component list which is also returned.
     :param tag: The root BeautifulSoup tag of the layout tree.
@@ -111,7 +113,7 @@ def parse_layout(tag: Tag) -> Tuple[Grid, List[Component]]:
         # Recursively parse child tags, merged returned component lists into master list
         component_list = []
         for child in tag.find_all(True, recursive=False):  # find all direct child tags, ignoring NavigableStrings
-            result, sub_list = parse_layout(child)
+            result, sub_list = create_grid_and_components(child)
             parsed.add(result)
             component_list.extend(sub_list)
         return parsed, component_list
