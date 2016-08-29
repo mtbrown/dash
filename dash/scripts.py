@@ -1,18 +1,14 @@
 import logging
 import os
-import sys
 import threading
 import time
 import enum
-from bs4 import BeautifulSoup
-import inspect
-import pkgutil
-from types import ModuleType
 from typing import List
 
-from .grid import create_grid
+from .grid import Grid, create_grid
 from .panel import Panel
-from .hooks import HookEvent, ScriptHook
+from .hooks import ScriptHook, HookEvent, load_hooks
+from .components.component import Component
 
 
 class ScriptStatus(enum.Enum):
@@ -22,7 +18,7 @@ class ScriptStatus(enum.Enum):
 
 
 class Script:
-    def __init__(self, id, grid, component_list, hooks):
+    def __init__(self, id: str, grid: Grid, component_list: List[Component], hooks: List[ScriptHook]):
         self.id = id  # name of module/package containing script
         self.grid = grid
         self.components = {comp.id: comp for comp in component_list}
@@ -32,7 +28,10 @@ class Script:
         self.label = 0
         self.panel = Panel(self.id, self.grid, self.components)
         self.thread = None
+
         self.hooks = {event: [] for event in HookEvent}
+        for hook in hooks:
+            self.hooks[hook.event].append(hook.callback)
 
 
 class ScriptManager(threading.Thread):
@@ -60,20 +59,11 @@ class ScriptManager(threading.Thread):
         for name in os.listdir(self.scripts_path):
             script_path = os.path.join(self.scripts_path, name)
             layout_file = os.path.join(script_path, 'layout.html')
-            hooks = []
-            for importer, modname, ispkg in pkgutil.walk_packages(path=[script_path], onerror=lambda x: None):
-                module = importer.find_module(modname).load_module(modname)
-                hooks.extend((load_hooks(module)))
-            if hooks:
-                grid, component_list = create_grid(layout_file)
-                script = Script(name, grid, component_list, hooks)
-                self.script_list.append(script)
-                self.script_map[script.id] = script
 
-
-def load_hooks(module: ModuleType) -> List[ScriptHook]:
-    hooks = []
-    for name, member in inspect.getmembers(module):
-        if isinstance(member, ScriptHook):
-            hooks.append(member)
-    return hooks
+            hooks = load_hooks(script_path)
+            if not hooks:
+                continue  # skip directory/file if no hooks were found
+            grid, component_list = create_grid(layout_file)
+            script = Script(name, grid, component_list, hooks)
+            self.script_list.append(script)
+            self.script_map[script.id] = script
