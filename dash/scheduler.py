@@ -49,7 +49,7 @@ class Schedule:
         if run_at and run_every >= timedelta(days=1):
             # append run_at time to an arbitrary date in order to use arrow
             run_at_date = datetime.combine(date.today(), run_at)
-            self.run_at = arrow.get(run_at_date, 'local').time()
+            self.run_at = arrow.get(run_at_date, 'local').to('utc').time()
 
         # last_run and next_run should be Arrow objects in UTC format
         self.last_run = None  # the last time the task was run, or None if it hasn't been run
@@ -60,6 +60,8 @@ class Schedule:
             self.next_run = next_time_occurrence(self.run_at)
         elif self.aligned:
             self.next_run = align_datetime(arrow.utcnow(), self.run_every)
+        else:
+            self.next_run = arrow.utcnow()
 
     def update(self):
         self.last_run = self.next_run
