@@ -7,33 +7,40 @@ from dash.scheduler import Schedule, next_time_occurrence, align_datetime
 
 
 def test_next_time_occurrence():
+    # Using default 'local' timezone would result in inconsistent tests
+    test_tz = 'America/Los_Angeles'
+
+    test_time = arrow.get('2016-08-30T13:42:41.737733-07:00')
+
     # Basic usage with a time later in the day
-    assert next_time_occurrence(time(hour=22, minute=30, second=11),
-                                ref_datetime=arrow.get('2016-08-30T20:42:41.737733+00:00')) \
-        == arrow.get('2016-08-30T22:30:11.000000+00:00')
+    assert next_time_occurrence(time(hour=22, minute=30, second=11), tz=test_tz,
+                                ref_datetime=test_time.to('utc')) \
+        == test_time.replace(hour=22, minute=30, second=11, microsecond=0).to('utc')
 
     # Time specified has already passed, should roll over to tomorrow
-    assert next_time_occurrence(time(hour=8, minute=22),
-                                ref_datetime=arrow.get('2016-08-30T20:42:41.737733+00:00')) \
-        == arrow.get('2016-08-31T08:22:00.000000+00:00')
+    assert next_time_occurrence(time(hour=8, minute=22), tz=test_tz,
+                                ref_datetime=test_time.to('utc')) \
+        == test_time.replace(days=+1, hour=8, minute=22, second=0, microsecond=0).to('utc')
 
     # Day rollover should result in a month rollover
-    assert next_time_occurrence(time(hour=8, minute=21),
-                                ref_datetime=arrow.get('2016-08-31T08:22:00.000000+00:00')) \
-        == arrow.get('2016-09-01T08:21:00.000000+00:00')
+    test_time = test_time.replace(days=+1)  # increment day
+    assert next_time_occurrence(time(hour=8, minute=22), tz=test_tz,
+                                ref_datetime=test_time.to('utc')) \
+        == arrow.get("2016-09-01T08:22:00.000000-07:00").to('utc')
 
     # If times match exactly, day shouldn't roll over
-    assert next_time_occurrence(time(hour=8, minute=21),
-                                ref_datetime=arrow.get('2016-08-31T08:21:00.000000+00:00')) \
-        == arrow.get('2016-08-31T08:21:00.000000+00:00')
+    test_time = arrow.get("2016-09-01T08:21:00.000000-07:00").to('utc')
+    assert next_time_occurrence(time(hour=8, minute=21), tz=test_tz,
+                                ref_datetime=test_time) \
+        == test_time
 
 
 def test_align_datetime():
     assert align_datetime(arrow.get('2016-08-30T20:42:41.737733+00:00'), timedelta(hours=1)) \
-           == arrow.get('2016-08-30T21:00:00.000000+00:00')
+        == arrow.get('2016-08-30T21:00:00.000000+00:00')
 
     assert align_datetime(arrow.get('2016-08-31T20:42:41.737733+00:00'), timedelta(days=1)) \
-           == arrow.get('2016-09-01T00:00:00.000000+00:00')
+        == arrow.get('2016-09-01T00:00:00.000000+00:00')
 
 
 def test_schedule_update_basic():

@@ -2,23 +2,25 @@ from datetime import timedelta, time, datetime, date
 import arrow
 
 
-def next_time_occurrence(time: time, ref_datetime: arrow.Arrow = None):
+def next_time_occurrence(time: time, tz: str = 'local', ref_datetime: arrow.Arrow = None):
     """
-    Returns the next UTC date and time the specified UTC clock time will occur.
+    Returns the next UTC date and time the specified local clock time will occur.
     The reference datetime will default to the current UTC datetime, but
     a custom datetime can be specified through the from_datetime parameter.
     If the current reference time matches the desired time exactly, the day
     will not be incremented and the untouched reference datetime will be returned.
-    :param time: The desired clock time
+    :param time: The desired local clock time
+    :param tz: The timezone associated with the provided time, defaults to local
     :param ref_datetime: The UTC datetime to use as the reference
-    :return: The next datetime the desired clock time will occur
+    :return: The next UTC datetime the desired local clock time will occur
     """
     ref_datetime = ref_datetime if ref_datetime else arrow.utcnow()
+    local_ref_datetime = ref_datetime.to(tz)
     # move date to tomorrow if reference time has already passed desired time
-    if ref_datetime.time() > time:
-        ref_datetime = ref_datetime.replace(days=+1)
-    combined = datetime.combine(ref_datetime.date(), time)
-    return arrow.get(combined, 'utc')
+    if local_ref_datetime.time() > time:
+        local_ref_datetime = local_ref_datetime.replace(days=+1)
+    combined = datetime.combine(local_ref_datetime.date(), time)
+    return arrow.get(combined, tz).to('utc')
 
 
 def align_datetime(datetime: arrow.Arrow, timedelta: timedelta):
@@ -42,14 +44,9 @@ class Schedule:
         :param aligned:
         """
         self.run_every = run_every
-        self.run_at = None
+        # run_at stored as a naive time in the local timezone
+        self.run_at = run_at if self.run_every >= timedelta(days=1) else None
         self.aligned = aligned if run_at is None else False
-
-        # Convert run_at from local timezone to UTC
-        if run_at and run_every >= timedelta(days=1):
-            # append run_at time to an arbitrary date in order to use arrow
-            run_at_date = datetime.combine(date.today(), run_at)
-            self.run_at = arrow.get(run_at_date, 'local').to('utc').time()
 
         # last_run and next_run should be Arrow objects in UTC format
         self.last_run = None  # the last time the task was run, or None if it hasn't been run
