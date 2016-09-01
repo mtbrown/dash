@@ -68,3 +68,5 @@ def test_duplicate_hooks():
 
 
 # TODO: add support for multiple hooks and test
+
+# TODO: test load_hooks()

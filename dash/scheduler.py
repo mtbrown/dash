@@ -1,5 +1,7 @@
 from datetime import timedelta, time, datetime, date
+from typing import Callable, List, Dict
 import arrow
+import threading
 
 
 def next_time_occurrence(time: time, tz: str = 'local', ref_datetime: arrow.Arrow = None):
@@ -51,14 +53,19 @@ def align_datetime(datetime: arrow.Arrow, delta: timedelta, tz: str = 'local'):
     return aligned.to('utc')
 
 
-class Schedule:
-    def __init__(self, run_every: timedelta, run_at: time = None, aligned: bool = False):
+class ScheduledTask(threading.Thread):
+    def __init__(self, run_every: timedelta, callback: Callable, args: List = None,
+                 kwargs: Dict = None, run_at: time = None, aligned: bool = False):
         """
         :param run_every: A timedelta object that describes how much time should pass between
         :param run_at:
         :param aligned:
         """
+        super().__init__(target=callback, args=args, kwargs=kwargs)
         self.run_every = run_every
+        self.callback = callback
+        self.args = args
+        self.kwargs = kwargs
         # run_at stored as a naive time in the local timezone
         self.run_at = run_at if self.run_every >= timedelta(days=1) else None
         self.aligned = aligned if run_at is None else False
@@ -87,6 +94,3 @@ class Schedule:
             self.next_run = align_datetime(next_run, self.run_every)
         else:
             self.next_run = next_run
-
-
-
