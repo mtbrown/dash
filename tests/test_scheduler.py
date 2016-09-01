@@ -3,7 +3,7 @@ import arrow
 from datetime import time, timedelta, datetime
 from time import sleep
 
-from dash.scheduler import ScheduledTask, next_time_occurrence, align_datetime
+from dash.scheduler import Scheduler, ScheduledTask, next_time_occurrence, align_datetime
 
 
 def test_next_time_occurrence():
@@ -110,3 +110,40 @@ def test_schedule_update_run_at():
     schedule.update()
     assert schedule.next_run == expected_next + timedelta(days=1)
 
+
+def test_scheduler_basic():
+    """
+    Add two tasks to a scheduler and verify that the times the callback function
+    is called is close to the expected times.
+    """
+    scheduler = Scheduler()
+
+    call_times = {
+        'a': [],
+        'b': []
+    }
+
+    expected_times = {
+        'a': [0, 1, 2, 3],
+        'b': [0, 0.5, 1, 1.5, 2, 2.5, 3]
+    }
+
+    def test_callback(id):
+        call_times[id].append(arrow.now())
+
+    task1 = ScheduledTask(run_every=timedelta(seconds=1), callback=test_callback, args=['a'])
+    task2 = ScheduledTask(run_every=timedelta(seconds=0.5), callback=test_callback, args=['b'])
+
+    scheduler.add_task(task1)
+    scheduler.add_task(task2)
+    scheduler.start()
+    start = arrow.now()
+    sleep(3.5)
+    scheduler.stop()
+
+    for id in expected_times:
+        assert len(call_times[id]) >= len(expected_times[id])
+        for call_time, expected in zip(call_times[id], expected_times[id]):
+            call_delta = call_time - start
+            expected_delta = timedelta(seconds=expected)
+            assert abs(call_delta - expected_delta) <= timedelta(seconds=0.5)

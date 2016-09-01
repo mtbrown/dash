@@ -1,7 +1,11 @@
 from datetime import timedelta, time, datetime, date
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Tuple
+from time import sleep
 import arrow
 import threading
+import bisect
+import logging
+import heapq
 
 
 def next_time_occurrence(time: time, tz: str = 'local', ref_datetime: arrow.Arrow = None):
@@ -53,7 +57,7 @@ def align_datetime(datetime: arrow.Arrow, delta: timedelta, tz: str = 'local'):
     return aligned.to('utc')
 
 
-class ScheduledTask(threading.Thread):
+class ScheduledTask:
     def __init__(self, run_every: timedelta, callback: Callable, args: List = None,
                  kwargs: Dict = None, run_at: time = None, aligned: bool = False):
         """
@@ -61,7 +65,6 @@ class ScheduledTask(threading.Thread):
         :param run_at:
         :param aligned:
         """
-        super().__init__(target=callback, args=args, kwargs=kwargs)
         self.run_every = run_every
         self.callback = callback
         self.args = args
@@ -69,6 +72,8 @@ class ScheduledTask(threading.Thread):
         # run_at stored as a naive time in the local timezone
         self.run_at = run_at if self.run_every >= timedelta(days=1) else None
         self.aligned = aligned if run_at is None else False
+
+        self.thread = None
 
         # last_run and next_run should be Arrow objects in UTC format
         self.last_run = None  # the last time the task was run, or None if it hasn't been run
@@ -94,3 +99,52 @@ class ScheduledTask(threading.Thread):
             self.next_run = align_datetime(next_run, self.run_every)
         else:
             self.next_run = next_run
+
+    def run(self):
+        self.thread = threading.Thread(target=self.callback, args=self.args, kwargs=self.kwargs)
+        self.thread.start()
+
+
+class Scheduler(threading.Thread):
+    def __init__(self):
+        super().__init__()
+
+        # Storing this as a priority queue would be more efficient, but using
+        # a list provides the flexibility of displaying upcoming tasks to user.
+        # List of tasks is always sorted by next_run time, nearest first
+        self._queue = []  # type: List[Tuple[arrow.Arrow, ScheduledTask]]
+        self._queue_lock = threading.RLock()
+        self._stop = threading.Event()
+
+    def add_task(self, task: ScheduledTask):
+        entry = (task.next_run, task)  # wrap in tuple to force sorting by next_run
+        with self._queue_lock:
+            heapq.heappush(self._queue, entry)
+
+    def remove_task(self, task: ScheduledTask):
+        with self._queue_lock:
+            self._queue.remove((task.next_run, task))
+
+    def stop(self):
+        self._stop.set()
+
+    def run(self):
+        while not self._stop.is_set():
+            with self._queue_lock:
+                next = self._queue[0][1] if self._queue else None  # type: ScheduledTask
+
+            if next:
+                now = arrow.utcnow()
+                if now >= next.next_run:
+                    next.run()
+                    with self._queue_lock:
+                        heapq.heappop(self._queue)
+                    next.update()
+                    self.add_task(next)
+                else:
+                    # set an upper limit on sleep time
+                    # another task could be added that occurs before current next
+                    sleep_delta = min(next.next_run - now, timedelta(seconds=0.5))
+                    sleep(sleep_delta.total_seconds())
+            else:
+                sleep(0.5)
