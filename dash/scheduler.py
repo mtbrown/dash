@@ -23,17 +23,28 @@ def next_time_occurrence(time: time, tz: str = 'local', ref_datetime: arrow.Arro
     return arrow.get(combined, tz).to('utc')
 
 
-def align_datetime(datetime: arrow.Arrow, timedelta: timedelta):
+def align_datetime(datetime: arrow.Arrow, timedelta: timedelta, tz: str = 'local'):
     """
-    Align the provided datetime to the next datetime divisible by timedelta.
+    Increase the provided datetime until it is aligned with a multiple of timedelta.
+    The alignment will occur in the specified timezone, or the local timezone if unspecified.
+    e.g., When the time delta is a day, the returned time will the next
+    midnight in the specified timezone.
     :param datetime: The datetime to align
     :param timedelta: The interval of time to align to
+    :param tz: The reference timezone for alignment
     :return: The aligned datetime
     """
-    base_time = arrow.get(0)
-    remainder = (datetime - base_time) % timedelta
-    aligned = datetime + timedelta - remainder
-    return aligned
+    # Convert to naive (no timezone) datetimes to force arithmetic using local times
+    base_time = arrow.get(0).naive  # 1970-01-01T00:00:00
+    local_time = datetime.to(tz).naive
+
+    # Subtract
+    remainder = (local_time - base_time) % timedelta
+    aligned_naive = local_time + timedelta - remainder
+
+    # Convert back to aware (with timezone) datetime
+    aligned = arrow.get(aligned_naive, tz)
+    return aligned.to('utc')
 
 
 class Schedule:
