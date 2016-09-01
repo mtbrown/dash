@@ -55,6 +55,11 @@ def test_align_datetime():
                           timedelta(hours=3), tz=test_tz) \
         == arrow.get('2016-08-31T21:00:00.000000-07:00')
 
+    # Already aligned datetime should result in the same time as output
+    assert align_datetime(arrow.get('2016-08-31T21:00:00.000000-07:00'),
+                          timedelta(hours=3), tz=test_tz).to('local') \
+        == arrow.get('2016-08-31T21:00:00.000000-07:00')
+
 
 def test_schedule_update_basic():
     """

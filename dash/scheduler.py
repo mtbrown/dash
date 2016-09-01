@@ -23,14 +23,15 @@ def next_time_occurrence(time: time, tz: str = 'local', ref_datetime: arrow.Arro
     return arrow.get(combined, tz).to('utc')
 
 
-def align_datetime(datetime: arrow.Arrow, timedelta: timedelta, tz: str = 'local'):
+def align_datetime(datetime: arrow.Arrow, delta: timedelta, tz: str = 'local'):
     """
     Increase the provided datetime until it is aligned with a multiple of timedelta.
     The alignment will occur in the specified timezone, or the local timezone if unspecified.
-    e.g., When the time delta is a day, the returned time will the next
-    midnight in the specified timezone.
+    e.g., When the time delta is a day, the returned datetime will be the next
+    midnight in the specified timezone. If the input datetime is already aligned,
+    the output will be equivalent to the input.
     :param datetime: The datetime to align
-    :param timedelta: The interval of time to align to
+    :param delta: The interval of time to align to
     :param tz: The reference timezone for alignment
     :return: The aligned datetime
     """
@@ -38,9 +39,12 @@ def align_datetime(datetime: arrow.Arrow, timedelta: timedelta, tz: str = 'local
     base_time = arrow.get(0).naive  # 1970-01-01T00:00:00
     local_time = datetime.to(tz).naive
 
-    # Subtract
-    remainder = (local_time - base_time) % timedelta
-    aligned_naive = local_time + timedelta - remainder
+    # Align naive datetime to next multiple of timedelta
+    remainder = (local_time - base_time) % delta
+    if remainder == timedelta(0):
+        aligned_naive = local_time
+    else:
+        aligned_naive = local_time + delta - remainder
 
     # Convert back to aware (with timezone) datetime
     aligned = arrow.get(aligned_naive, tz)
@@ -73,7 +77,16 @@ class Schedule:
 
     def update(self):
         self.last_run = self.next_run
-        self.next_run = self.last_run + self.run_every
+
+        # The next_run datetime needs to be re-aligned every update
+        # DST could have occurred in the local timezone since the last update
+        next_run = self.last_run + self.run_every  # type: arrow.Arrow
+        if self.run_at:
+            self.next_run = next_time_occurrence(self.run_at, ref_datetime=next_run)
+        elif self.aligned:
+            self.next_run = align_datetime(next_run, self.run_every)
+        else:
+            self.next_run = next_run
 
 
 
