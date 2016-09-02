@@ -55,23 +55,11 @@ def align_datetime(datetime: arrow.Arrow, delta: timedelta, tz: str = 'local'):
     return aligned.to('utc')
 
 
-class ScheduledTask:
-    def __init__(self, run_every: timedelta, callback: Callable, args: List = None,
-                 kwargs: Dict = None, run_at: time = None, aligned: bool = False):
-        """
-        :param run_every: A timedelta object that describes how much time should pass between
-        :param run_at:
-        :param aligned:
-        """
+class Schedule:
+    def __init__(self, run_every: timedelta, run_at: time = None, aligned: bool = False):
         self.run_every = run_every
-        self.callback = callback
-        self.args = args
-        self.kwargs = kwargs
-        # run_at stored as a naive time in the local timezone
         self.run_at = run_at if self.run_every >= timedelta(days=1) else None
         self.aligned = aligned if run_at is None else False
-
-        self.thread = None
 
         # last_run and next_run should be Arrow objects in UTC format
         self.last_run = None  # the last time the task was run, or None if it hasn't been run
@@ -98,9 +86,24 @@ class ScheduledTask:
         else:
             self.next_run = next_run
 
+
+class ScheduledTask:
+    def __init__(self, schedule: Schedule, callback: Callable, args: List = None, kwargs: Dict = None):
+        self.schedule = schedule
+        self.callback = callback
+        self.args = args
+        self.kwargs = kwargs
+
+        self.thread = None
+
+    @property
+    def next_run(self):
+        return self.schedule.next_run
+
     def run(self):
         self.thread = threading.Thread(target=self.callback, args=self.args, kwargs=self.kwargs)
         self.thread.start()
+        self.schedule.update()
 
 
 class Scheduler(threading.Thread):
@@ -137,7 +140,6 @@ class Scheduler(threading.Thread):
                     next.run()
                     with self._queue_lock:
                         heapq.heappop(self._queue)
-                    next.update()
                     self.add_task(next)
                 else:
                     # set an upper limit on sleep time

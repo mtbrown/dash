@@ -3,7 +3,7 @@ import arrow
 from datetime import time, timedelta, datetime
 from time import sleep
 
-from dash.scheduler import Scheduler, ScheduledTask, next_time_occurrence, align_datetime
+from dash.scheduler import Schedule, Scheduler, ScheduledTask, next_time_occurrence, align_datetime
 
 
 def test_next_time_occurrence():
@@ -65,7 +65,7 @@ def test_schedule_update_basic():
     """
     Verify that a basic schedule updates correctly.
     """
-    schedule = ScheduledTask(run_every=timedelta(hours=1), callback=lambda x: x)
+    schedule = Schedule(run_every=timedelta(hours=1))
 
     assert schedule.last_run is None
     start = schedule.next_run
@@ -86,7 +86,7 @@ def test_schedule_update_aligned():
         sleep(1)
 
     start = arrow.utcnow()
-    schedule = ScheduledTask(run_every=timedelta(days=1), callback=lambda x: x, aligned=True)
+    schedule = Schedule(run_every=timedelta(days=1), aligned=True)
     expected_start = align_datetime(start, timedelta(days=1))
     assert schedule.next_run == expected_start
 
@@ -101,7 +101,7 @@ def test_schedule_update_run_at():
     # local time, converted to UTC inside of Schedule class
     desired_time = arrow.now().replace(hours=-1).time()
 
-    schedule = ScheduledTask(run_every=timedelta(days=1), callback=lambda x: x, run_at=desired_time)
+    schedule = Schedule(run_every=timedelta(days=1), run_at=desired_time)
 
     tomorrow = arrow.now().replace(days=+1)
     expected_next = arrow.get(datetime.combine(tomorrow.date(), desired_time), 'local')
@@ -142,8 +142,8 @@ def test_scheduler_basic():
     def test_callback(id):
         call_times[id].append(arrow.now())
 
-    task1 = ScheduledTask(run_every=timedelta(seconds=1), callback=test_callback, args=['a'])
-    task2 = ScheduledTask(run_every=timedelta(seconds=0.5), callback=test_callback, args=['b'])
+    task1 = ScheduledTask(Schedule(run_every=timedelta(seconds=1)), callback=test_callback, args=['a'])
+    task2 = ScheduledTask(Schedule(run_every=timedelta(seconds=0.5)), callback=test_callback, args=['b'])
 
     scheduler.add_task(task1)
     scheduler.add_task(task2)
