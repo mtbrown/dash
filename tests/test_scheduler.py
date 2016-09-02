@@ -111,6 +111,17 @@ def test_schedule_update_run_at():
     assert schedule.next_run == expected_next + timedelta(days=1)
 
 
+def test_scheduler_non_blocking():
+    """
+    Verify that starting the scheduler does not block the main thread. Simply reaching
+    the end of the test indicates success. Test failure would indicate an issue with
+    eventlet monkey-patching (http://eventlet.net/doc/patching.html).
+    """
+    scheduler = Scheduler()
+    scheduler.start()
+    scheduler.stop()
+
+
 def test_scheduler_basic():
     """
     Add two tasks to a scheduler and verify that the times the callback function
@@ -147,3 +158,4 @@ def test_scheduler_basic():
             call_delta = call_time - start
             expected_delta = timedelta(seconds=expected)
             assert abs(call_delta - expected_delta) <= timedelta(seconds=0.5)
+

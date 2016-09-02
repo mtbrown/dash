@@ -3,16 +3,16 @@ import eventlet
 import os
 from datetime import timedelta
 
+# Monkey patch standard library to work with eventlet
+# http://eventlet.net/doc/patching.html
+eventlet.monkey_patch()
+
 from .scheduler import Scheduler, ScheduledTask
 from .scripts import load_scripts
 from .api import api, socket
 
 # Path that contains scripts
 SCRIPTS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "scripts"))  # ../scripts
-
-# eventlet is required for flask_socketio
-# monkey patching is required because threading is used
-eventlet.monkey_patch()
 
 app = Flask(__name__, static_url_path='', static_folder='../client/public')
 app.config['SECRET_KEY'] = 'secret!'
