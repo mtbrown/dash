@@ -112,7 +112,7 @@ class Scheduler(threading.Thread):
         # List of tasks is always sorted by next_run time, nearest first
         self._queue = []  # type: List[Tuple[arrow.Arrow, ScheduledTask]]
         self._queue_lock = threading.RLock()
-        self._stop = threading.Event()
+        self._stop_event = threading.Event()
 
     def add_task(self, task: ScheduledTask):
         entry = (task.next_run, task)  # wrap in tuple to force sorting by next_run
@@ -124,10 +124,10 @@ class Scheduler(threading.Thread):
             self._queue.remove((task.next_run, task))
 
     def stop(self):
-        self._stop.set()
+        self._stop_event.set()
 
     def run(self):
-        while not self._stop.is_set():
+        while not self._stop_event.is_set():
             with self._queue_lock:
                 next = self._queue[0][1] if self._queue else None  # type: ScheduledTask
 
