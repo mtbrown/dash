@@ -13,7 +13,7 @@ from datetime import timedelta, datetime
 import inspect
 import pkgutil
 
-from .scheduler import ScheduledTask
+from .scheduler import Schedule
 
 
 # The attribute used to attach the ScriptHook to the function.
@@ -22,11 +22,11 @@ ATTRIBUTE_NAME = '_script_hook'
 
 class HookEvent(Enum):
     Setup = 'setup'
-    Entry = 'entry'
+    Schedule = 'schedule'
 
 
 class ScriptHook:
-    def __init__(self, callback: Callable, event: HookEvent, schedule: ScheduledTask = None):
+    def __init__(self, callback: Callable, event: HookEvent, schedule: Schedule = None):
         self.callback = callback
         self.event = event
         self.schedule = schedule
@@ -67,8 +67,8 @@ def schedule(run_every: timedelta = None, at: datetime = None, aligned: bool = F
     at the top of the hour, every hour. This parameter is ignored if 'at' is specified.
     """
     def decorator(func):
-        sched = ScheduledTask(run_every=run_every, callback=func, run_at=at, aligned=aligned)
-        hook = ScriptHook(func, HookEvent.Entry, sched)
+        schedule = Schedule(run_every=run_every, run_at=at, aligned=aligned)
+        hook = ScriptHook(func, HookEvent.Schedule, schedule)
         setattr(func, ATTRIBUTE_NAME, hook)
         return func
     return decorator

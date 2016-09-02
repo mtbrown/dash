@@ -31,7 +31,7 @@ def test_schedule_hook():
     hook = getattr(test_callback, hooks.ATTRIBUTE_NAME)
     assert isinstance(hook, hooks.ScriptHook)
     assert hook.callback == test_callback
-    assert hook.event == hooks.HookEvent.Entry
+    assert hook.event == hooks.HookEvent.Schedule
 
     assert hook.schedule.run_every == timedelta(days=1)
     assert hook.schedule.run_at == time(hour=12, minute=0)

@@ -10,6 +10,7 @@ eventlet.monkey_patch()
 from .scheduler import Scheduler, ScheduledTask
 from .scripts import load_scripts
 from .api import api, socket
+from . import hooks
 
 # Path that contains scripts
 SCRIPTS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "scripts"))  # ../scripts
