@@ -1,10 +1,8 @@
-from datetime import timedelta, time, datetime, date
+from datetime import timedelta, time, datetime
 from typing import Callable, List, Dict, Tuple
 from time import sleep
 import arrow
 import threading
-import bisect
-import logging
 import heapq
 
 
