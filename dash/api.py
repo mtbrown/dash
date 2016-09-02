@@ -1,20 +1,21 @@
 from flask_restful import Api, Resource
 from flask import Blueprint
-from flask_socketio import join_room, leave_room, send
+from flask_socketio import SocketIO, join_room, leave_room, send
 
-from . import socketio, scripts
+from . import scripts
 
+socket = SocketIO()
 
 api = Api(Blueprint('api', __name__))
 
 
-@socketio.on('join', namespace='/api')
+@socket.on('join', namespace='/api')
 def on_join(data):
     join_room(data['room'])
     send("You have joined room {0}".format(data['room']))
 
 
-@socketio.on('leave', namespace='/api')
+@socket.on('leave', namespace='/api')
 def on_leave(data):
     leave_room(data['room'])
 
