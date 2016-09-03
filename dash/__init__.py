@@ -7,7 +7,7 @@ from datetime import timedelta
 # http://eventlet.net/doc/patching.html
 eventlet.monkey_patch()
 
-from .scheduler import Scheduler, ScheduledTask
+from .scheduler import Schedule, Scheduler, ScheduledTask
 from .scripts import load_scripts
 from .api import api, socket
 from . import hooks
@@ -30,8 +30,8 @@ def catch_all(path):
 
 def start_server():
     schedule = Scheduler()
-    load_scripts_task = ScheduledTask(run_every=timedelta(minutes=1), callback=load_scripts,
-                                      args=[SCRIPTS_PATH])
+    load_scripts_task = ScheduledTask(Schedule(run_every=timedelta(minutes=1)),
+                                      callback=load_scripts, args=[SCRIPTS_PATH, schedule])
     schedule.add_task(load_scripts_task)
     schedule.start()
 
