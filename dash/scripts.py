@@ -2,6 +2,7 @@ import os
 import enum
 from typing import List
 import threading
+import queue
 
 from .grid import Grid, parse_layout
 from .panel import Panel
@@ -33,11 +34,53 @@ class Script:
         self.status = ScriptStatus.Ok
         self.label = 0
         self.panel = Panel(self.id, self.grid, self.components)
-        self.thread = None
 
         self.hooks = {event: [] for event in HookEvent}
         for hook in hooks:
             self.hooks[hook.event].append(hook)
+
+        # Only one thread should be running the script at a time, the script shouldn't be assumed
+        # to be thread safe. If a thread is currently running the script when another is attempted
+        # to be run, the new one will be added to the queue.
+        self._thread = None
+        self._thread_lock = threading.RLock()
+        self._thread_running = False
+        self._queue = queue.Queue()
+
+    def start(self, scheduler):
+        # Run setup hooks once
+        for hook in self.hooks[HookEvent.Setup]:
+            self.run_hook(hook)
+
+        # Add scheduled tasks to the scheduler
+        for hook in self.hooks[HookEvent.Schedule]:
+            task = ScheduledTask(hook.schedule, callback=self.run_hook, args=[hook])
+            scheduler.add_task(task)
+
+    def run_hook(self, hook):
+        """
+        Adds the callback hook to the queue of the script.
+        :param hook:
+        """
+        start_thread = False
+        with self._thread_lock:
+            self._queue.put_nowait(hook)
+            if not self._thread_running:
+                start_thread = True
+                self._thread_running = True
+        if start_thread:
+            self.start_thread()
+
+    def start_thread(self):
+        while True:
+            with self._thread_lock:
+                if self._queue.empty():
+                    self._thread_running = False
+                    break
+            hook = self._queue.get_nowait()
+            self._thread = threading.Thread(target=hook.callback, args=[self.panel])
+            self._thread.start()
+            self._thread.join()
 
 
 def load_scripts(path, scheduler):
@@ -54,22 +97,4 @@ def load_scripts(path, scheduler):
         script_map[script.id] = script
         script_path_map[script_path] = script
 
-        start_script(script, scheduler)
-
-
-def start_script(script, scheduler):
-    # Run setup hooks once
-    for hook in script.hooks[HookEvent.Setup]:
-        start_hook(script, hook)
-
-    # Add scheduled tasks to the scheduler
-    for hook in script.hooks[HookEvent.Schedule]:
-        task = ScheduledTask(hook.schedule, callback=start_hook, args=[script, hook])
-        scheduler.add_task(task)
-
-
-def start_hook(script, hook):
-    script.thread = threading.Thread(target=hook.callback, args=[script.panel])
-    script.thread.start()
-
-
+        script.start(scheduler)
