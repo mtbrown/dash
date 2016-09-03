@@ -159,3 +159,21 @@ def test_scheduler_basic():
             expected_delta = timedelta(seconds=expected)
             assert abs(call_delta - expected_delta) <= timedelta(seconds=0.5)
 
+
+def test_scheduler_priority_tie():
+    """
+    Add two tasks to the scheduler with equivalent start times and verify that
+    both are added successful to the priority queue.
+    """
+    scheduler = Scheduler()
+
+    now = arrow.now()
+    task1 = ScheduledTask(Schedule(run_every=timedelta(days=1), run_at=now.time()), lambda x: x)
+    task2 = ScheduledTask(Schedule(run_every=timedelta(days=1), run_at=now.time()), lambda x: x)
+    assert task1.next_run == task2.next_run
+
+    scheduler.add_task(task1)
+    scheduler.add_task(task2)
+
+    assert len(scheduler) == 2
+

@@ -110,15 +110,20 @@ class Scheduler(threading.Thread):
     def __init__(self):
         super().__init__()
 
-        # Storing this as a priority queue would be more efficient, but using
-        # a list provides the flexibility of displaying upcoming tasks to user.
-        # List of tasks is always sorted by next_run time, nearest first
         self._queue = []  # type: List[Tuple[arrow.Arrow, ScheduledTask]]
         self._queue_lock = threading.RLock()
         self._stop_event = threading.Event()
 
+        # The counter is added to the entry tuple for every task added to the queue.
+        # This breaks ties between equivalent next_run times and guarantees that
+        # the ScheduledTask objects will never be compared.
+        self._counter = 0
+        self._counter_lock = threading.RLock()
+
     def add_task(self, task: ScheduledTask):
-        entry = (task.next_run, task)  # wrap in tuple to force sorting by next_run
+        with self._counter_lock:
+            entry = (task.next_run, self._counter, task)  # wrap in tuple to force sorting by next_run
+            self._counter += 1
         with self._queue_lock:
             heapq.heappush(self._queue, entry)
 
@@ -132,7 +137,7 @@ class Scheduler(threading.Thread):
     def run(self):
         while not self._stop_event.is_set():
             with self._queue_lock:
-                next = self._queue[0][1] if self._queue else None  # type: ScheduledTask
+                next = self._queue[0][2] if self._queue else None  # type: ScheduledTask
 
             if next:
                 now = arrow.utcnow()
@@ -148,3 +153,7 @@ class Scheduler(threading.Thread):
                     sleep(sleep_delta.total_seconds())
             else:
                 sleep(0.5)
+
+    def __len__(self):
+        with self._queue_lock:
+            return len(self._queue)
