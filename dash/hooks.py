@@ -11,7 +11,8 @@ from typing import Callable, List
 from enum import Enum
 from datetime import timedelta, datetime
 import inspect
-import pkgutil
+import os
+import importlib.util
 
 from .scheduler import Schedule
 
@@ -34,17 +35,37 @@ class ScriptHook:
 
 def load_hooks(path: str) -> List[ScriptHook]:
     """
-    Discovers the hooks defined within the provided path. If the path leads to a package, each module
-    within the package is searched.
+    Discovers the hooks defined within the provided directory. The directory
+    is recursively searched and all files with a '.py' extension are inspected.
+    A list of all ScriptHooks discovered within the directory is returned.
     :param path: The path to search
     :return: A list of ScriptHooks that were discovered
     """
     hooks = []
-    for importer, modname, ispkg in pkgutil.walk_packages(path=[path], onerror=lambda x: None):
-        module = importer.find_module(modname).load_module(modname)
-        for name, func in inspect.getmembers(module, inspect.isfunction):
-            if hasattr(func, ATTRIBUTE_NAME):
-                hooks.append(getattr(func, ATTRIBUTE_NAME))
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith('.py'):
+                name = os.path.splitext(file)[0]
+                hooks.extend(load_hooks_from_module(name, os.path.join(root, file)))
+    return hooks
+
+
+def load_hooks_from_module(name: str, module_path: str) -> List[ScriptHook]:
+    """
+    Imports and inspects the Python module at the specified path. A list of
+    hooks discovered within the module is returned.
+    :param name: The name of the module used for __name__ when imported.
+    :param module_path: Absolute path of python file to inspect.
+    :return: A list of ScriptHooks discovered in the module
+    """
+    spec = importlib.util.spec_from_file_location(name, module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    hooks = []
+    for name, func in inspect.getmembers(module, inspect.isfunction):
+        if hasattr(func, ATTRIBUTE_NAME):
+            hooks.append(getattr(func, ATTRIBUTE_NAME))
     return hooks
 
 
