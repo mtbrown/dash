@@ -56,7 +56,7 @@ def align_datetime(datetime: arrow.Arrow, delta: timedelta, tz: str = 'local'):
 
 
 class Schedule:
-    def __init__(self, run_every: timedelta, run_at: time = None, aligned: bool = False):
+    def __init__(self, run_every: timedelta, run_at: time = None, aligned: bool = False, tz: str = 'local'):
         self.run_every = run_every
         self.run_at = run_at if self.run_every >= timedelta(days=1) else None
         self.aligned = aligned if run_at is None else False
@@ -67,9 +67,9 @@ class Schedule:
 
         # initialize self.next_run based on run_at and aligned
         if self.run_at:
-            self.next_run = next_time_occurrence(self.run_at)
+            self.next_run = next_time_occurrence(self.run_at, tz=tz)
         elif self.aligned:
-            self.next_run = align_datetime(arrow.utcnow(), self.run_every)
+            self.next_run = align_datetime(arrow.utcnow(), self.run_every, tz=tz)
         else:
             self.next_run = arrow.utcnow()
 
