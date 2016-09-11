@@ -19,7 +19,7 @@ class Table(Component):
     def __init__(self, id: str, title: str = None, rows: List[str] = None,
                  headers: List[str] = None, max_rows: int = 0):
         super().__init__(id, title=title)
-        self.headers = headers
+        self.headers = self.register_property('headers', headers)
         self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows
 
@@ -41,10 +41,10 @@ class Statistic(Component):
     def __init__(self, id: str, title: str = None, unit: str = None,
                  description: str = None, icon: str = None):
         super().__init__(id, title=title)
-        self._value = 0
-        self.unit = unit
-        self.description = description
-        self.icon = icon
+        self.value = self.register_property('value', 0)
+        self.unit = self.register_property('unit', unit)
+        self.description = self.register_property('description', description)
+        self.icon = self.register_property('icon', icon)
 
     @property
     def state(self):
@@ -54,12 +54,3 @@ class Statistic(Component):
             "description": self.description,
             "icon": self.icon
         }
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-        self.emit_state()
