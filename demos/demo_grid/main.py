@@ -1,33 +1,32 @@
-from dash.components import Statistic, LineChart, BarChart, Table
-import logging
+import dash
 import time
 import random
+from datetime import timedelta
 
 
+bar_labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"]
+
+
+@dash.hooks.setup
 def main(panel):
-    stat1 = panel.components['stat1']  # type: Statistic
-    stat2 = panel.components['stat2']  # type: Statistic
-    bar_chart = panel.components['chart2']  # type: BarChart
-    line_chart = panel.components['chart1']  # type: LineChart
-    table = panel.components['table']  # type: Table
-
-    bar_labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"]
+    print(panel.components)
     for label in bar_labels:
-        bar_chart.add_bar(label, random.randint(0, 100))
+        panel.components['bar_chart'].add_bar(label, random.randint(0, 100))
 
-    table.headers = ["Time", "Value"]
-    table.max_rows = 10
+    panel.components['table'].headers = ["Time", "Value"]
+    panel.components['table'].max_rows = 10
 
-    while True:
-        stat1.value = random.randint(0, 100)
-        stat2.value = random.randint(0, 100)
 
-        line_chart.add_point_now(random.randint(0, 20))
-        bar_chart.update_bar(random.choice(bar_labels), random.randint(0, 100))
+@dash.hooks.schedule(run_every=timedelta(seconds=1))
+def update(panel):
+    panel.components['stat1'].value = random.randint(0, 100)
+    panel.components['stat2'].value = random.randint(0, 100)
 
-        table.add_row([str(time.time()), str(random.randint(0, 20))])
+    panel.components['line_chart'].add_point_now(random.randint(0, 20))
+    panel.components['bar_chart'].update_bar(random.choice(bar_labels), random.randint(0, 100))
 
-        time.sleep(1)
+    panel.components['table'].add_row([str(time.time()), str(random.randint(0, 20))])
+
 
 if __name__ == "__main__":
     pass
