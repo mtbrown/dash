@@ -132,6 +132,7 @@ def construct_with_attrs(cls, attrs: Dict[str, str]):
     # This dictionary maps types to functions that convert strings to that type
     converters = {
         int: int,
+        float: float,
         str: str,
         List: lambda s: s[1:-1].split(', '),
         Any: lambda s: s,
