@@ -98,13 +98,14 @@ def test_schedule_update_run_at():
     """
     Verify that a schedule with a specified run time updates correctly.
     """
-    # local time, converted to UTC inside of Schedule class
-    desired_time = arrow.now().replace(hours=-1).time()
+    test_tz = 'America/Los_Angeles'
+    test_start = arrow.utcnow()
 
-    schedule = Schedule(run_every=timedelta(days=1), run_at=desired_time)
+    desired_time = test_start.to(test_tz).replace(hours=-1).time()
+    schedule = Schedule(run_every=timedelta(days=1), run_at=desired_time, tz=test_tz)
 
-    tomorrow = arrow.now().replace(days=+1)
-    expected_next = arrow.get(datetime.combine(tomorrow.date(), desired_time), 'local')
+    tomorrow = test_start.to(test_tz).replace(days=+1)
+    expected_next = arrow.get(datetime.combine(tomorrow.date(), desired_time), test_tz)
     assert schedule.next_run == expected_next
 
     schedule.update()
