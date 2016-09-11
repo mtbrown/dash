@@ -6,23 +6,13 @@ from .component import Component
 class Text(Component):
     def __init__(self, id: str, title: str = None, text: str = ""):
         super().__init__(id, title=title)
-        self._text = ""
-        self.text = text
+        self.text = self.register_property('text', text)
 
     @property
     def state(self):
         return {
             "text": self.text
         }
-
-    @property
-    def text(self):
-        return self._text
-
-    @text.setter
-    def text(self, text):
-        self._text = text
-        self.emit_state()
 
 
 class Table(Component):
