@@ -54,3 +54,24 @@ class Statistic(Component):
             "description": self.description,
             "icon": self.icon
         }
+
+
+class ProgressBar(Component):
+    def __init__(self, id: str, title: str = None, style: str = 'info', label: bool = False,
+                 striped: bool = False, animated: bool = False):
+        super().__init__(id, title=title)
+        self.value = self.register_property('value', 0)
+        self.style = self.register_property('style', style)
+        self.label = self.register_property('label', label)
+        self.striped = self.register_property('striped', striped)
+        self.animated = self.register_property('animated', animated)
+
+    @property
+    def state(self):
+        return {
+            'value': self.value,
+            'style': self.style,
+            'label': self.label,
+            'striped': self.striped,
+            'animated': self.animated
+        }
