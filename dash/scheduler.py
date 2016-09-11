@@ -60,6 +60,7 @@ class Schedule:
         self.run_every = run_every
         self.run_at = run_at if self.run_every >= timedelta(days=1) else None
         self.aligned = aligned if run_at is None else False
+        self.tz = tz
 
         # last_run and next_run should be Arrow objects in UTC format
         self.last_run = None  # the last time the task was run, or None if it hasn't been run
@@ -67,9 +68,9 @@ class Schedule:
 
         # initialize self.next_run based on run_at and aligned
         if self.run_at:
-            self.next_run = next_time_occurrence(self.run_at, tz=tz)
+            self.next_run = next_time_occurrence(self.run_at, tz=self.tz)
         elif self.aligned:
-            self.next_run = align_datetime(arrow.utcnow(), self.run_every, tz=tz)
+            self.next_run = align_datetime(arrow.utcnow(), self.run_every, tz=self.tz)
         else:
             self.next_run = arrow.utcnow()
 
@@ -80,9 +81,9 @@ class Schedule:
         # DST could have occurred in the local timezone since the last update
         next_run = self.last_run + self.run_every  # type: arrow.Arrow
         if self.run_at:
-            self.next_run = next_time_occurrence(self.run_at, ref_datetime=next_run)
+            self.next_run = next_time_occurrence(self.run_at, tz=self.tz, ref_datetime=next_run)
         elif self.aligned:
-            self.next_run = align_datetime(next_run, self.run_every)
+            self.next_run = align_datetime(next_run, self.run_every, tz=self.tz)
         else:
             self.next_run = next_run
 
