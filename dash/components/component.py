@@ -35,7 +35,7 @@ class Component:
         return init
 
     def __setattr__(self, name, value):
-        self.__dict__[name] = value
+        super().__setattr__(name, value)
         if hasattr(self, '_registered') and name in self._registered:
             if self._registered[name]:  # check if property has been initialized
                 self.emit_state()
