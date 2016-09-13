@@ -92,7 +92,6 @@ class Chart(Component):
         colors = color_generator()
         for i in range(value):
             self.datasets.append(Dataset("Dataset {i}".format(i=i), color=next(colors)))
-        self.emit_state()
 
     @property
     def state(self):
@@ -126,24 +125,24 @@ class Chart(Component):
         return cur_state
 
 
-# class BarChart(Chart):
-#     chart_type = 'bar'
-#
-#     def add_bar(self, label: str, value: float):
-#         self.labels.append(label)
-#         self.data.append(value)
-#         self.emit_state()
-#
-#     def update_bar(self, label: str, value: float):
-#         data_index = self.labels.index(label)
-#         self.data[data_index] = value
-#         self.emit_state()
-#
-#     def remove_bar(self, label: str):
-#         data_index = self.labels.index(label)
-#         self.labels.pop(data_index)
-#         self.data.pop(data_index)
-#         self.emit_state()
+class BarChart(Chart):
+    chart_type = 'bar'
+
+    # def add_bar(self, label: str, value: float):
+    #     self.labels.append(label)
+    #     self.data.append(value)
+    #     self.emit_state()
+    #
+    # def update_bar(self, label: str, value: float):
+    #     data_index = self.labels.index(label)
+    #     self.data[data_index] = value
+    #     self.emit_state()
+    #
+    # def remove_bar(self, label: str):
+    #     data_index = self.labels.index(label)
+    #     self.labels.pop(data_index)
+    #     self.data.pop(data_index)
+    #     self.emit_state()
 
 
 class LineChart(Chart):
