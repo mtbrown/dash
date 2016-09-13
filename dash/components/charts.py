@@ -54,6 +54,7 @@ class Dataset:
             'fill': self.fill,
             'backgroundColor': 'rgba({0}, {1}, {2}, 0.4)'.format(*self.color.value),
             'borderColor': 'rgba({0}, {1}, {2}, 1)'.format(*self.border_color.value),
+            'borderWidth': 2,  # required for border around bar chart bars
             'data': self.data
         }
 
@@ -128,21 +129,21 @@ class Chart(Component):
 class BarChart(Chart):
     chart_type = 'bar'
 
-    # def add_bar(self, label: str, value: float):
-    #     self.labels.append(label)
-    #     self.data.append(value)
-    #     self.emit_state()
-    #
-    # def update_bar(self, label: str, value: float):
-    #     data_index = self.labels.index(label)
-    #     self.data[data_index] = value
-    #     self.emit_state()
-    #
-    # def remove_bar(self, label: str):
-    #     data_index = self.labels.index(label)
-    #     self.labels.pop(data_index)
-    #     self.data.pop(data_index)
-    #     self.emit_state()
+    def add_bar(self, label: str, value: float):
+        self.labels.append(label)
+        self.datasets[0].data.append(value)
+        self.emit_state()
+
+    def update_bar(self, label: str, value: float):
+        data_index = self.labels.index(label)
+        self.datasets[0].data[data_index] = value
+        self.emit_state()
+
+    def remove_bar(self, label: str):
+        data_index = self.labels.index(label)
+        self.labels.pop(data_index)
+        self.datasets[0].data.pop(data_index)
+        self.emit_state()
 
 
 class LineChart(Chart):
