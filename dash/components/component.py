@@ -35,9 +35,9 @@ class Component:
         return init
 
     def __setattr__(self, name, value):
-        if hasattr(self, '_registered') and hasattr(self, name) and name in self._registered:
-            self.emit_state()
         self.__dict__[name] = value
+        if hasattr(self, '_registered') and name in self._registered:
+            self.emit_state()
 
     def emit_state(self):
         socket.emit(self.id, self.state, namespace='/api', room=self.id)
