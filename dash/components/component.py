@@ -10,7 +10,7 @@ class Component:
         self.title = title
         self.containers = []  # grids that panel is currently contained in
         self.id = id
-        self._registered = []
+        self._registered = {}
 
     @abc.abstractproperty
     def state(self) -> Dict:
@@ -31,13 +31,16 @@ class Component:
         :param init: The default value of the property
         :return: The default value of the property
         """
-        self._registered.append(name)
+        self._registered[name] = False  # False indicates the property hasn't been initialized
         return init
 
     def __setattr__(self, name, value):
         self.__dict__[name] = value
         if hasattr(self, '_registered') and name in self._registered:
-            self.emit_state()
+            if self._registered[name]:  # check if property has been initialized
+                self.emit_state()
+            else:
+                self._registered[name] = True  # mark property as initialized
 
     def emit_state(self):
         socket.emit(self.id, self.state, namespace='/api', room=self.id)
