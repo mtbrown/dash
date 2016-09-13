@@ -111,7 +111,7 @@ class Scheduler(threading.Thread):
     def __init__(self):
         super().__init__()
 
-        self._queue = []  # type: List[Tuple[arrow.Arrow, ScheduledTask]]
+        self._queue = []  # type: List[Tuple[arrow.Arrow, int, ScheduledTask]]
         self._queue_lock = threading.RLock()
         self._stop_event = threading.Event()
 
@@ -127,10 +127,6 @@ class Scheduler(threading.Thread):
             self._counter += 1
         with self._queue_lock:
             heapq.heappush(self._queue, entry)
-
-    def remove_task(self, task: ScheduledTask):
-        with self._queue_lock:
-            self._queue.remove((task.next_run, task))
 
     def stop(self):
         self._stop_event.set()
