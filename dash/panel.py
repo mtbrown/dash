@@ -13,3 +13,4 @@ class Panel:
         self.script_id = script_id
         self.grid = grid
         self.components = components
+        self.store = {}
