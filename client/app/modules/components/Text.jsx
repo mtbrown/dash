@@ -1,8 +1,11 @@
 import React from 'react';
+import Remarkable from 'remarkable';
 
 class Text extends React.Component {
   render() {
-    return <span>{this.props.data.text}</span>;
+    const md = new Remarkable();
+    const rawMarkup = md.render(this.props.data.text);
+    return <span dangerouslySetInnerHTML={{ __html: rawMarkup }} />;
   }
 }
 
