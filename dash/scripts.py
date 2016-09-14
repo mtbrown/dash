@@ -28,16 +28,20 @@ class Script:
     def __init__(self, id: str, grid: Grid, component_list: List[Component], hooks: List[ScriptHook]):
         self.id = id  # name of module/package containing script
         self.grid = grid
-        self.components = {comp.id: comp for comp in component_list}
 
         self.title = id  # title displayed
         self.status = ScriptStatus.Ok
         self.label = 0
-        self.panel = Panel(self.id, self.grid, self.components)
+
+        self.components = {comp.id: comp for comp in component_list}
+        for component in component_list:
+            component.attach_to_script(self)
 
         self.hooks = {event: [] for event in HookEvent}
         for hook in hooks:
             self.hooks[hook.event].append(hook)
+
+        self.panel = Panel(self.id, self.grid, self.components)
 
         # Only one thread should be running the script at a time, the script shouldn't be assumed
         # to be thread safe. If a thread is currently running the script when another is attempted

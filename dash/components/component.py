@@ -8,7 +8,13 @@ class Component:
 
     def __init__(self, id: str):
         self.id = id
+        self.script = None  # script that owns this component
+        self.initialized = False
         self._registered = {}
+
+    def attach_to_script(self, script):
+        self.script = script
+        self.initialized = True
 
     @abc.abstractproperty
     def state(self) -> Dict:
