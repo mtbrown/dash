@@ -15,7 +15,7 @@ export class Grid extends React.Component {
       return <Component
         id={element.id}
         type={element.type}
-        script_id={this.props.script_id}
+        scriptId={this.props.scriptId}
         key={element.id}
       />;
     }

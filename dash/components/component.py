@@ -47,4 +47,4 @@ class Component:
                 self._registered[name] = True  # mark property as initialized
 
     def emit_state(self):
-        socket.emit(self.id, self.state, namespace='/api', room=self.id)
+        socket.emit(self.id, self.state, namespace='/api', room='{0}/{1}'.format(self.script.id, self.id))

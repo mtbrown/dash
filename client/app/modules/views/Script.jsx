@@ -40,7 +40,7 @@ export class Script extends React.Component {
     if (this.state.loading) {
       content = <span>Loading...</span>;
     } else {
-      content = <Grid grid={this.state.grid} script_id={this.props.params.scriptId} />;
+      content = <Grid grid={this.state.grid} scriptId={this.props.params.scriptId} />;
     }
 
     return (

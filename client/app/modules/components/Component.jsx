@@ -14,21 +14,22 @@ const componentMap = {
 
 
 export class Component extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {loading: true, data: {}};
+    this.roomId = `${this.props.scriptId}/${this.props.id}`;
     this.dataHandler = this.dataHandler.bind(this);
   }
 
   async componentDidMount() {
-    const response = await get(`/api/scripts/${this.props.script_id}/components/${this.props.id}`);
+    const response = await get(`/api/scripts/${this.props.scriptId}/components/${this.props.id}`);
     this.dataHandler(response);
     socket.on(this.props.id, this.dataHandler);
-    socket.emit('join', {room: this.props.id});
+    socket.emit('join', {room: this.roomId});
   }
 
   componentWillUnmount() {
-    socket.emit('leave', {room: this.props.id});
+    socket.emit('leave', {room: this.roomId});
     socket.removeListener(this.props.id, this.dataHandler);
   }
 
