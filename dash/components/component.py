@@ -6,9 +6,7 @@ from ..api import socket
 class Component:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, id: str, title: str = None):
-        self.title = title
-        self.containers = []  # grids that panel is currently contained in
+    def __init__(self, id: str):
         self.id = id
         self._registered = {}
 

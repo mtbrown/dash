@@ -4,8 +4,8 @@ from .component import Component
 
 
 class Text(Component):
-    def __init__(self, id: str, title: str = None, text: str = ""):
-        super().__init__(id, title=title)
+    def __init__(self, id: str, text: str = ""):
+        super().__init__(id)
         self.text = self.register_property('text', text)
 
     @property
@@ -16,9 +16,9 @@ class Text(Component):
 
 
 class Table(Component):
-    def __init__(self, id: str, title: str = None, rows: List[str] = None,
+    def __init__(self, id: str, rows: List[str] = None,
                  headers: List[str] = None, max_rows: int = 0):
-        super().__init__(id, title=title)
+        super().__init__(id)
         self.headers = self.register_property('headers', headers)
         self.rows = list(rows) if rows is not None else []
         self.max_rows = max_rows
@@ -38,9 +38,9 @@ class Table(Component):
 
 
 class Statistic(Component):
-    def __init__(self, id: str, title: str = None, unit: str = None,
+    def __init__(self, id: str, unit: str = None,
                  description: str = None, icon: str = None):
-        super().__init__(id, title=title)
+        super().__init__(id)
         self.value = self.register_property('value', 0)
         self.unit = self.register_property('unit', unit)
         self.description = self.register_property('description', description)
@@ -57,9 +57,9 @@ class Statistic(Component):
 
 
 class ProgressBar(Component):
-    def __init__(self, id: str, title: str = None, style: str = 'info', label: bool = False,
+    def __init__(self, id: str, style: str = 'info', label: bool = False,
                  striped: bool = False, animated: bool = False):
-        super().__init__(id, title=title)
+        super().__init__(id)
         self.value = self.register_property('value', 0)
         self.style = self.register_property('style', style)
         self.label = self.register_property('label', label)

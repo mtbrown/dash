@@ -67,9 +67,9 @@ class Chart(Component):
     def chart_type(self):
         raise NotImplementedError
 
-    def __init__(self, id: str, title: str = None, min_y: float = None, max_y: float = None, max_points: int = 0,
+    def __init__(self, id: str, min_y: float = None, max_y: float = None, max_points: int = 0,
                  description: str = None, num_datasets: int = 1):
-        super().__init__(id, title=title)
+        super().__init__(id)
         self.min_y = min_y
         self.max_y = max_y
         self.max_points = 0
