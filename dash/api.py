@@ -12,7 +12,6 @@ api = Api(Blueprint('api', __name__))
 @socket.on('join', namespace='/api')
 def on_join(data):
     join_room(data['room'])
-    send("You have joined room {0}".format(data['room']))
 
 
 @socket.on('leave', namespace='/api')
