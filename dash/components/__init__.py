@@ -1,2 +1,2 @@
 from .basic import Text, Table, Statistic, ProgressBar
-from .charts import LineChart, BarChart, ChartScale
+from .charts import LineChart, BarChart, ChartScale, ChartColor

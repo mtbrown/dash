@@ -35,13 +35,11 @@ class Dataset:
     id_counter = 0
     id_lock = RLock()
 
-    def __init__(self, label: str, color: ChartColor = ChartColor.Blue, border_color: ChartColor = None,
-                 fill: bool = False):
+    def __init__(self, label: str, color: ChartColor = ChartColor.Blue, fill: bool = False):
         self.data = []
         self.label = label
         self.fill = fill
         self.color = color
-        self.border_color = border_color if border_color else color
 
         with self.id_lock:
             self.id = self.id_counter
@@ -53,7 +51,7 @@ class Dataset:
             'label': self.label,
             'fill': self.fill,
             'backgroundColor': 'rgba({0}, {1}, {2}, 0.4)'.format(*self.color.value),
-            'borderColor': 'rgba({0}, {1}, {2}, 1)'.format(*self.border_color.value),
+            'borderColor': 'rgba({0}, {1}, {2}, 1)'.format(*self.color.value),
             'borderWidth': 2,  # required for border around bar chart bars
             'data': self.data
         }
