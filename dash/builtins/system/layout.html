@@ -1,0 +1,16 @@
+<Grid>
+    <Row>
+        <Col md=6>
+            <Text id="cpu_title" text="### CPU" />
+            <Text id="cpu_text" />
+            <ProgressBar id="cpu_bar" striped=True animated=True />
+            <LineChart id="cpu_chart" min_y=0 max_y=100 max_points=30 />
+        </Col>
+        <Col md=6>
+            <Text id="mem_title" text="### Memory" />
+            <Text id="mem_text" />
+            <ProgressBar id="mem_bar" style="danger" striped=True animated=True />
+            <LineChart id="mem_chart" min_y=0 max_points=30 />
+        </Col>
+    </Row>
+</Grid>
