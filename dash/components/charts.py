@@ -35,8 +35,8 @@ class Dataset:
     id_counter = 0
     id_lock = RLock()
 
-    def __init__(self, label: str, color: ChartColor = ChartColor.Blue, fill: bool = False, line_tension: float = None,
-                 point_radius: float = None):
+    def __init__(self, label: str, color: ChartColor = ChartColor.Blue, line_tension: float = None,
+                 point_radius: float = None, fill: bool = False):
         self.data = []
         self.label = label
         self.fill = fill
@@ -76,7 +76,7 @@ class Chart(Component):
 
     def __init__(self, id: str, min_y: float = None, max_y: float = None, max_points: int = 0,
                  description: str = None, num_datasets: int = 1, line_tension: float = None,
-                 point_radius: float = None):
+                 point_radius: float = None, fill: bool = False):
         super().__init__(id)
         self.min_y = min_y
         self.max_y = max_y
@@ -88,6 +88,7 @@ class Chart(Component):
         self.datasets = []
         self.line_tension = line_tension
         self.point_radius = point_radius
+        self.fill = fill
 
         self.num_datasets = num_datasets
 
@@ -104,7 +105,7 @@ class Chart(Component):
         colors = color_generator()
         for i in range(value):
             self.datasets.append(Dataset("Dataset {i}".format(i=i), color=next(colors), line_tension=self.line_tension,
-                                         point_radius=self.point_radius))
+                                         point_radius=self.point_radius, fill=self.fill))
 
     @property
     def state(self):
