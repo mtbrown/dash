@@ -35,11 +35,14 @@ class Dataset:
     id_counter = 0
     id_lock = RLock()
 
-    def __init__(self, label: str, color: ChartColor = ChartColor.Blue, fill: bool = False):
+    def __init__(self, label: str, color: ChartColor = ChartColor.Blue, fill: bool = False, line_tension: float = None,
+                 point_radius: float = None):
         self.data = []
         self.label = label
         self.fill = fill
         self.color = color
+        self.line_tension = line_tension
+        self.point_radius = point_radius
 
         with self.id_lock:
             self.id = self.id_counter
@@ -47,7 +50,7 @@ class Dataset:
 
     @property
     def state(self):
-        return {
+        state = {
             'label': self.label,
             'fill': self.fill,
             'backgroundColor': 'rgba({0}, {1}, {2}, 0.4)'.format(*self.color.value),
@@ -55,6 +58,12 @@ class Dataset:
             'borderWidth': 2,  # required for border around bar chart bars
             'data': self.data
         }
+        if self.line_tension is not None:
+            state['lineTension'] = self.line_tension
+        if self.point_radius is not None:
+            state['pointRadius'] = self.point_radius
+
+        return state
 
 
 class Chart(Component):
@@ -66,7 +75,8 @@ class Chart(Component):
         raise NotImplementedError
 
     def __init__(self, id: str, min_y: float = None, max_y: float = None, max_points: int = 0,
-                 description: str = None, num_datasets: int = 1):
+                 description: str = None, num_datasets: int = 1, line_tension: float = None,
+                 point_radius: float = None):
         super().__init__(id)
         self.min_y = min_y
         self.max_y = max_y
@@ -76,6 +86,9 @@ class Chart(Component):
         self.x_scale = ChartScale.Category
         self.labels = []
         self.datasets = []
+        self.line_tension = line_tension
+        self.point_radius = point_radius
+
         self.num_datasets = num_datasets
 
     @property
@@ -90,7 +103,8 @@ class Chart(Component):
 
         colors = color_generator()
         for i in range(value):
-            self.datasets.append(Dataset("Dataset {i}".format(i=i), color=next(colors)))
+            self.datasets.append(Dataset("Dataset {i}".format(i=i), color=next(colors), line_tension=self.line_tension,
+                                         point_radius=self.point_radius))
 
     @property
     def state(self):
