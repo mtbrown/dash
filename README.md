@@ -11,6 +11,7 @@ Dash provides a central framework for the management, scheduling, and monitoring
 * All UI components are updated dynamically using websockets so information is always up to date.
 
 #### Screenshots
+![](http://i.imgur.com/9vbY9B0.png)
 
 ## Installation
 
@@ -77,7 +78,8 @@ def update(panel):
     panel.store['count'] += 1
 ```
 
-This will result in the following script dashboard.
+This will result in the following script dashboard:
+![](http://i.imgur.com/ngAaF27.png)
 
 ## Usage
 Execute the script by running `dash.py`.
