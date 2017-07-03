@@ -1,6 +1,6 @@
 from typing import List
 
-from .component import Component
+from dash.component import Component
 
 
 class Text(Component):

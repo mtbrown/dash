@@ -1,15 +1,14 @@
-import os
 import enum
-from typing import List
-import threading
+import os
 import queue
+import threading
+from typing import List
 
-from .grid import Grid, parse_layout
-from .panel import Panel
+from dash.component import Component
+from .grid import Grid
 from .hooks import ScriptHook, HookEvent, load_hooks
+from .panel import Panel
 from .scheduler import ScheduledTask
-from .components.component import Component
-
 
 script_list = []
 

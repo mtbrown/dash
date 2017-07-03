@@ -1,6 +1,8 @@
 import abc
 from typing import Dict
-from ..api import socket
+
+from .api import socket
+from .grid import Grid
 
 
 class Component:
@@ -11,6 +13,8 @@ class Component:
         self.script = None  # script that owns this component
         self.initialized = False
         self._registered = {}
+
+        Grid.add_component(self)
 
     def attach_to_script(self, script):
         self.script = script

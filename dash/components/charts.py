@@ -1,9 +1,10 @@
 import abc
-from enum import Enum
-from .component import Component
 import datetime
-from typing import Any, Iterable, Iterator
+from enum import Enum
 from threading import RLock
+from typing import Any, Iterable, Iterator
+
+from dash.component import Component
 
 
 class ChartScale(Enum):

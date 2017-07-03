@@ -4,7 +4,7 @@ access to a dictionary containing all of the UI components and the grid.
 """
 from typing import Dict
 
-from .components.component import Component
+from dash.component import Component
 from .grid import Grid
 
 
