@@ -9,6 +9,7 @@ from .grid import Grid
 from .hooks import ScriptHook, HookEvent, load_hooks
 from .panel import Panel
 from .scheduler import ScheduledTask
+from .app import load_app
 
 script_list = []
 
@@ -23,7 +24,7 @@ class ScriptStatus(enum.Enum):
     Error = "error"
 
 
-class Script:
+class ScriptExecution:
     def __init__(self, id: str, grid: Grid, component_list: List[Component], hooks: List[ScriptHook]):
         self.id = id  # name of module/package containing script
         self.grid = grid
@@ -88,14 +89,18 @@ class Script:
 
 def load_scripts(path, scheduler):
     for name in os.listdir(path):
-        script_path = os.path.join(path, name)
-        layout_file = os.path.join(script_path, 'layout.html')
+        if name == '__pycache__':
+            continue
 
-        hooks = load_hooks(script_path)
+        script_path = os.path.join(path, name)
+
+        app = load_app(script_path)
+        hooks = load_hooks(app)
         if not hooks or script_path in script_path_map:
             continue  # skip directory/file if no hooks were found
+
         grid, component_list = parse_layout(open(layout_file).read())
-        script = Script(name, grid, component_list, hooks)
+        script = ScriptExecution(name, grid, component_list, hooks)
         script_list.append(script)
         script_map[script.id] = script
         script_path_map[script_path] = script

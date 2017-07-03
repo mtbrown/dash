@@ -12,9 +12,9 @@ from enum import Enum
 from datetime import timedelta, datetime
 import inspect
 import os
-import importlib.util
 
 from .scheduler import Schedule
+from .app import App
 
 
 # The attribute used to attach the ScriptHook to the function.
@@ -33,7 +33,7 @@ class ScriptHook:
         self.schedule = schedule
 
 
-def load_hooks(path: str) -> List[ScriptHook]:
+def load_hooks(app: App) -> List[ScriptHook]:
     """
     Discovers the hooks defined within the provided directory. The directory
     is recursively searched and all files with a '.py' extension are inspected.
@@ -42,28 +42,7 @@ def load_hooks(path: str) -> List[ScriptHook]:
     :return: A list of ScriptHooks that were discovered
     """
     hooks = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith('.py'):
-                name = os.path.splitext(file)[0]
-                hooks.extend(load_hooks_from_module(name, os.path.join(root, file)))
-    return hooks
-
-
-def load_hooks_from_module(name: str, module_path: str) -> List[ScriptHook]:
-    """
-    Imports and inspects the Python module at the specified path. A list of
-    hooks discovered within the module is returned.
-    :param name: The name of the module used for __name__ when imported.
-    :param module_path: Absolute path of python file to inspect.
-    :return: A list of ScriptHooks discovered in the module
-    """
-    spec = importlib.util.spec_from_file_location(name, module_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
-    hooks = []
-    for name, func in inspect.getmembers(module, inspect.isfunction):
+    for name, func in inspect.getmembers(app.__class__, inspect.isfunction):
         if hasattr(func, ATTRIBUTE_NAME):
             hooks.append(getattr(func, ATTRIBUTE_NAME))
     return hooks

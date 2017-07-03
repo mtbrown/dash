@@ -11,6 +11,7 @@ from .scheduler import Schedule, Scheduler, ScheduledTask
 from .scripts import load_scripts
 from .api import api, socket
 from . import hooks
+from .app import App
 
 # Path that contains scripts
 SCRIPTS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "scripts"))  # ../scripts
