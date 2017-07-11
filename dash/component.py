@@ -14,8 +14,6 @@ class Component:
         self.initialized = False
         self._registered = {}
 
-        Grid.add_component(self)
-
     def attach_to_script(self, script):
         self.script = script
         self.initialized = True
@@ -28,6 +26,13 @@ class Component:
         emit_state() is called.
         """
         return {}
+
+    @property
+    def grid_state(self):
+        return {
+            'type': self.__class__.__name__,
+            'id': self.id
+        }
 
     def register_property(self, name, init):
         """

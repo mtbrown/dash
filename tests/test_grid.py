@@ -1,37 +1,45 @@
 import pytest
 
+import dash
 from dash.grid import Grid, Col, Row
 from dash.components import Statistic, LineChart, BarChart, Table
 
 
-class DemoGrid:
-    def __init__(self):
-        self.grid = Grid()
-
-        with self.grid:
-            with Row():
-                with Col(md=4):
-                    with Row():
-                        with Col(md=12):
-                            self.stat_1 = Statistic(id='stat1')
-                        with Col(md=12):
-                            self.stat_2 = Statistic(id='stat2')
-                with Col(md=8):
-                    self.line_chart = LineChart(id='line_chart', min_y=0, max_y=20)
-            with Row():
-                with Col(md=8):
-                    self.bar_chart = BarChart(id='bar_chart', min_y=0, max_y=100)
-                with Col(md=4):
-                    self.table = Table(id='table')
-
-
-def test_grid_state():
+def test_grid_context_manager_state():
     """
     Verify the representation of the grid state matches what the front-end expects.
     """
+    class DemoGrid(dash.App):
+        def __init__(self):
+            super().__init__()
+
+            self.stat_1 = Statistic(id='stat1')
+            self.stat_2 = Statistic(id='stat2')
+            self.line_chart = LineChart(id='line_chart', min_y=0, max_y=20)
+            self.bar_chart = BarChart(id='bar_chart', min_y=0, max_y=100)
+            self.table = Table(id='table')
+
+        def render(self):
+            return Grid(
+                Row(
+                    Col(
+                        Row(
+                            Col(self.stat_1, md=12),
+                            Col(self.stat_2, md=12)
+                        ),
+                        md=4,
+                    ),
+                    Col(self.line_chart, md=8)
+                ),
+                Row(
+                    Col(self.bar_chart, md=8),
+                    Col(self.table, md=4)
+                )
+            )
+
     test = DemoGrid()
 
-    assert test.grid.state == {
+    assert test.render().state == {
         'children': [{
             'children': [{
                 'props': {

@@ -3,10 +3,15 @@ import os
 import importlib.util
 from typing import Optional
 
+from .grid import Grid
+
 
 class App:
     def __init__(self):
         pass
+
+    def render(self):
+        return Grid()
 
 
 def load_app_from_module(name: str, module_path: str) -> Optional[App]:
