@@ -5,7 +5,7 @@ import threading
 
 from .hooks import HookEvent, load_hooks
 from .scheduler import ScheduledTask
-from .script import Script, load_app
+from .script import Script, load_script
 
 script_list = []
 
@@ -81,14 +81,15 @@ class ScriptExecution:
 
 
 def load_scripts(path, scheduler):
-    for name in os.listdir(path):
-        if name == '__pycache__':
+    for sub_path in os.listdir(path):
+        if sub_path in {'__pycache__'}:
             continue
 
-        script_path = os.path.join(path, name)
+        name, _ = os.path.splitext(sub_path)
+        script_path = os.path.join(path, sub_path)
 
-        script = load_app(script_path)
-        if script_path in script_path_map:
+        script = load_script(script_path)
+        if script is None or script_path in script_path_map:
             continue
 
         script = ScriptExecution(name, script)
