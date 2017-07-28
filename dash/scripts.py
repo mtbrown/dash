@@ -2,14 +2,10 @@ import enum
 import os
 import queue
 import threading
-from typing import List
 
-from dash.component import Component
-from .grid import Grid
-from .hooks import ScriptHook, HookEvent, load_hooks
-from .panel import Panel
+from .hooks import HookEvent, load_hooks
 from .scheduler import ScheduledTask
-from .app import load_app
+from .script import Script, load_app
 
 script_list = []
 
@@ -25,23 +21,20 @@ class ScriptStatus(enum.Enum):
 
 
 class ScriptExecution:
-    def __init__(self, id: str, grid: Grid, component_list: List[Component], hooks: List[ScriptHook]):
+    def __init__(self, id: str, script: Script):
         self.id = id  # name of module/package containing script
-        self.grid = grid
+        self.script = script
 
+        self.grid = script.render()
         self.title = id  # title displayed
         self.status = ScriptStatus.Ok
         self.label = 0
 
-        self.components = {comp.id: comp for comp in component_list}
-        for component in component_list:
-            component.attach_to_script(self)
+        self.components = {comp.id: comp for comp in self.grid.components}
 
         self.hooks = {event: [] for event in HookEvent}
-        for hook in hooks:
+        for hook in load_hooks(self.script):
             self.hooks[hook.event].append(hook)
-
-        self.panel = Panel(self.id, self.grid, self.components)
 
         # Only one thread should be running the script at a time, the script shouldn't be assumed
         # to be thread safe. If a thread is currently running the script when another is attempted
@@ -82,7 +75,7 @@ class ScriptExecution:
                     self._thread_running = False
                     break
             hook = self._queue.get_nowait()
-            self._thread = threading.Thread(target=hook.callback, args=[self.panel])
+            self._thread = threading.Thread(target=hook.callback, args=[self.script])
             self._thread.start()
             self._thread.join()
 
@@ -94,13 +87,11 @@ def load_scripts(path, scheduler):
 
         script_path = os.path.join(path, name)
 
-        app = load_app(script_path)
-        hooks = load_hooks(app)
-        if not hooks or script_path in script_path_map:
-            continue  # skip directory/file if no hooks were found
+        script = load_app(script_path)
+        if script_path in script_path_map:
+            continue
 
-        grid, component_list = parse_layout(open(layout_file).read())
-        script = ScriptExecution(name, grid, component_list, hooks)
+        script = ScriptExecution(name, script)
         script_list.append(script)
         script_map[script.id] = script
         script_path_map[script_path] = script

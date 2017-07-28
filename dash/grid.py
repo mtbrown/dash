@@ -1,11 +1,21 @@
 import abc
 
+from .component import Component
+
 
 class GridNode:
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, *children):
-        self.children = list(children)
+        self.children = []
+        self.components = []  # list of components that are descendants (not necessarily directly) of the node
+
+        for child in children:
+            self.children.append(child)
+            if isinstance(child, GridNode):
+                self.components.extend(child.components)
+            elif isinstance(child, Component):
+                self.components.append(child)
 
 
 class Grid(GridNode):
@@ -46,5 +56,5 @@ class Col(GridNode):
             'type': 'Col',
             'children': [child.grid_state for child in self.children],
             'props': {key: val for (key, val) in self.__dict__.items() if val is not None
-                      and key not in ['children']}
+                      and key not in ['children', 'components']}
         }

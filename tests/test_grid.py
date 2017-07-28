@@ -9,9 +9,9 @@ def test_grid_context_manager_state():
     """
     Verify the representation of the grid state matches what the front-end expects.
     """
-    class DemoGrid(dash.App):
+    class DemoGrid(dash.Script):
         def __init__(self):
-            super().__init__()
+            super().__init__('demo_grid')
 
             self.stat_1 = Statistic(id='stat1')
             self.stat_2 = Statistic(id='stat2')
@@ -38,8 +38,11 @@ def test_grid_context_manager_state():
             )
 
     test = DemoGrid()
+    grid = test.render()
 
-    assert test.render().state == {
+    assert set(grid.components) == {test.stat_1, test.stat_2, test.line_chart, test.bar_chart, test.table}
+
+    assert grid.state == {
         'children': [{
             'children': [{
                 'props': {
