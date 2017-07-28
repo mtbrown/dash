@@ -1,8 +1,8 @@
 import abc
 from typing import Dict
 
-from .api import socket
-from .grid import Grid
+from .api import emit_component_state
+from . import context
 
 
 class Component:
@@ -10,13 +10,9 @@ class Component:
 
     def __init__(self, id: str):
         self.id = id
-        self.script = None  # script that owns this component
-        self.initialized = False
+        self.script = context.current_script
         self._registered = {}
 
-    def attach_to_script(self, script):
-        self.script = script
-        self.initialized = True
 
     @abc.abstractproperty
     def state(self) -> Dict:
@@ -56,4 +52,4 @@ class Component:
                 self._registered[name] = True  # mark property as initialized
 
     def emit_state(self):
-        socket.emit(self.id, self.state, namespace='/api', room='{0}/{1}'.format(self.script.id, self.id))
+        emit_component_state(self.script.id, self.id, self.state)

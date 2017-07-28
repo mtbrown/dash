@@ -14,7 +14,7 @@ import inspect
 import os
 
 from .scheduler import Schedule
-from .app import App
+from .script import Script
 
 
 # The attribute used to attach the ScriptHook to the function.
@@ -33,16 +33,16 @@ class ScriptHook:
         self.schedule = schedule
 
 
-def load_hooks(app: App) -> List[ScriptHook]:
+def load_hooks(script: Script) -> List[ScriptHook]:
     """
     Discovers the hooks defined within the provided directory. The directory
     is recursively searched and all files with a '.py' extension are inspected.
     A list of all ScriptHooks discovered within the directory is returned.
-    :param path: The path to search
+    :param script: 
     :return: A list of ScriptHooks that were discovered
     """
     hooks = []
-    for name, func in inspect.getmembers(app.__class__, inspect.isfunction):
+    for name, func in inspect.getmembers(script.__class__, inspect.isfunction):
         if hasattr(func, ATTRIBUTE_NAME):
             hooks.append(getattr(func, ATTRIBUTE_NAME))
     return hooks

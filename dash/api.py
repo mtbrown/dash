@@ -19,6 +19,10 @@ def on_leave(data):
     leave_room(data['room'])
 
 
+def emit_component_state(script_id, component_id, component_state):
+    socket.emit(component_id, component_state, namespace='/api', room='{0}/{1}'.format(script_id, component_id))
+
+
 @api.resource('/scripts')
 class Scripts(Resource):
     @staticmethod
