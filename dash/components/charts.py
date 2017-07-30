@@ -77,14 +77,13 @@ class Chart(Component):
 
     def __init__(self, id: str, min_y: float = None, max_y: float = None, max_points: int = 0,
                  description: str = None, num_datasets: int = 1, line_tension: float = None,
-                 point_radius: float = None, fill: bool = False):
+                 point_radius: float = None, fill: bool = False, x_scale: ChartScale = ChartScale.Category):
         super().__init__(id)
         self.min_y = min_y
         self.max_y = max_y
-        self.max_points = 0
         self.description = description
         self.max_points = max_points
-        self.x_scale = ChartScale.Category
+        self.x_scale = x_scale
         self.labels = []
         self.datasets = []
         self.line_tension = line_tension
