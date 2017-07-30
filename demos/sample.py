@@ -6,7 +6,7 @@ from datetime import timedelta
 from random import randint
 
 
-class DemoGrid(dash.Script):
+class SampleScript(dash.Script):
     def __init__(self):
         super().__init__(id='sample')
 
